@@ -16,4 +16,13 @@ app.get('/users', async response => {
   return response.json(request)
 })
 
-export default app
+const port = parseInt(process.env.PORT!) || 3000
+
+const Massive = `\x1b[38;5;208mMassive\x1b[0m`
+
+console.log(`${Massive} Bun + Hono server running...`)
+
+export default {
+  port: port,
+  fetch: app.fetch
+}
