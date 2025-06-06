@@ -13,6 +13,7 @@ export const auth = pgTable('auth', {
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id),
+  identifier: varchar('identifier', { length: 255 }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
