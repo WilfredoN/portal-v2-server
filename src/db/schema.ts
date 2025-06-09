@@ -8,6 +8,14 @@ export const userStatusEnum = pgEnum('user_status', [
   'deleted'
 ])
 
+export const userRoleEnum = pgEnum('user_role', [
+  'superadmin',
+  'admin',
+  'enterprise_customer',
+  'selfserve_customer',
+  'sdk_partner'
+])
+
 export const auth = pgTable('auth', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
