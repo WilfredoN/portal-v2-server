@@ -16,6 +16,21 @@ export const userRoleEnum = pgEnum('user_role', [
   'sdk_partner'
 ])
 
+export const permissionsEnum = pgEnum('permissions', [
+  'create',
+  'view',
+  'edit',
+  'delete'
+])
+
+export const resourcesEnum = pgEnum('resources', [
+  'users',
+  'plans',
+  'residential_plans',
+  'isp_plans',
+  'serp_plans'
+])
+
 export const auth = pgTable('auth', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -33,5 +48,15 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   firstName: varchar('first_name', { length: 50 }).notNull(),
   lastName: varchar('last_name', { length: 50 }).notNull(),
-  status: userStatusEnum('status').notNull().default('new')
+  status: userStatusEnum('status').notNull().default('new'),
+  role: userRoleEnum('role')
+})
+
+export const permissions = pgTable('permissions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  permission: permissionsEnum('action').notNull(),
+  resourcesEnum: resourcesEnum('resource').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull()
 })
