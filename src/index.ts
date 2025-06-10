@@ -8,7 +8,7 @@ import { PERMISSION, RESOURCES } from './types/permissions'
 const app = new Hono()
 // TODO: Make routes as Map
 
-app.get('/', response => response.text('Hello, 42'))
+app.all('/', response => response.text('Hello, 42'))
 
 app.get(
   '/users',
