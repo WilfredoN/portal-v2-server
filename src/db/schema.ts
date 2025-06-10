@@ -40,7 +40,8 @@ export const auth = pgTable('auth', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-  provider: varchar('provider', { length: 255 }).notNull()
+  provider: varchar('provider', { length: 255 }).notNull(),
+  password: varchar('password', { length: 255 })
 })
 
 export const users = pgTable('users', {

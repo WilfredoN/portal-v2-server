@@ -19,4 +19,17 @@ export type UserAuth = {
   identifier: string
   createdAt: Date
   provider: string
+  password?: string
+}
+
+export type SignUpDTO = {
+  email: string
+  firstName: string
+  lastName: string
+  password: string
+}
+
+export type LoginDTO = {
+  email: string
+  password: string
 }
