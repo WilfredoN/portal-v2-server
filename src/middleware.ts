@@ -1,13 +1,15 @@
+import type { Context, Next } from 'hono'
 import {
   ROLE_PERMISSIONS,
-  type Action,
-  type Resource
+  type Permissions,
+  type Resource,
+  type Role
 } from './types/permissions'
 
-export const hasPermission = (
-  user: { role: string },
+const hasPermission = (
+  user: { role: Role },
   resource: Resource,
-  action: Action
+  permission: Permissions
 ): boolean => {
   const rolePermissions = ROLE_PERMISSIONS[user.role]
 
@@ -15,7 +17,26 @@ export const hasPermission = (
     return false
   }
 
-  const allowedResources = rolePermissions.can[action]
+  const allowedResources = rolePermissions.can[permission]
 
   return allowedResources?.includes(resource) || false
+}
+
+export const requirePermission = (
+  resource: Resource,
+  permission: Permissions
+) => {
+  return async (context: Context, next: Next) => {
+    const user = context.get('user')
+
+    if (!user || !user.role) {
+      return context.json({ message: 'Unauthorized' }, 401)
+    }
+
+    if (!hasPermission(user, resource, permission)) {
+      return context.json({ message: 'Forbidden' }, 403)
+    }
+
+    await next()
+  }
 }

@@ -1,20 +1,33 @@
+import 'dotenv/config'
 import { Hono } from 'hono'
 import { db } from './db'
 import { users } from './db/schema'
+import { requirePermission } from './middleware'
+import { PERMISSION, RESOURCES } from './types/permissions'
 
 const app = new Hono()
+// TODO: Make routes as Map
 
 app.get('/', response => response.text('Hello, 42'))
 
-app.get('/users', async response => {
-  const request = await db.select().from(users)
+app.get(
+  '/users',
+  requirePermission(RESOURCES.USERS, PERMISSION.VIEW),
+  async response => {
+    try {
+      const request = await db.select().from(users)
 
-  if (request.length === 0) {
-    return response.json({ message: 'No users found' }, 404)
+      if (request.length === 0) {
+        return response.json({ message: 'No users found' }, 404)
+      }
+
+      return response.json(request)
+    } catch (error) {
+      console.error('Error fetching users:', error)
+      return response.json({ message: 'Internal Server Error' }, 500)
+    }
   }
-
-  return response.json(request)
-})
+)
 
 const port = parseInt(process.env.PORT!) || 3000
 

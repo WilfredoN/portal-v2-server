@@ -54,7 +54,7 @@ export const users = pgTable('users', {
 
 export const permissions = pgTable('permissions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  permission: permissionsEnum('action').notNull(),
+  permission: permissionsEnum('permission').notNull(),
   resourcesEnum: resourcesEnum('resource').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()

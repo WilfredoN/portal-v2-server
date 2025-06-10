@@ -20,19 +20,19 @@ export const RESOURCES = {
 
 export type Resource = (typeof RESOURCES)[keyof typeof RESOURCES]
 
-export const ACTIONS = {
+export const PERMISSION = {
   CREATE: 'create',
   VIEW: 'view',
   EDIT: 'edit',
   DELETE: 'delete'
 } as const
 
-export type Action = (typeof ACTIONS)[keyof typeof ACTIONS]
+export type Permissions = (typeof PERMISSION)[keyof typeof PERMISSION]
 
 export type RolePermissions = {
-  [role: string]: {
+  [role: Role]: {
     can: {
-      [action in Action]?: Resource[]
+      [permission in Permissions]?: Resource[]
     }
   }
 }
@@ -40,15 +40,27 @@ export type RolePermissions = {
 export const ROLE_PERMISSIONS: RolePermissions = {
   admin: {
     can: {
-      view: ['users', 'plans', 'residential_plans', 'isp_plans', 'serp_plans'],
-      create: ['plans'],
-      edit: ['plans'],
-      delete: ['users']
+      view: [
+        RESOURCES.USERS,
+        RESOURCES.PLANS,
+        RESOURCES.RESIDENTIAL_PLANS,
+        RESOURCES.ISP_PLANS,
+        RESOURCES.SERP_PLANS
+      ],
+      create: [RESOURCES.PLANS],
+
+      edit: [RESOURCES.PLANS],
+      delete: [RESOURCES.USERS]
     }
   },
   user: {
     can: {
-      view: ['plans', 'residential_plans', 'isp_plans', 'serp_plans']
+      view: [
+        RESOURCES.PLANS,
+        RESOURCES.RESIDENTIAL_PLANS,
+        RESOURCES.ISP_PLANS,
+        RESOURCES.SERP_PLANS
+      ]
     }
   }
 }
