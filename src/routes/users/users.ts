@@ -1,10 +1,11 @@
 import { Hono } from 'hono'
-import { requirePermission } from '../../middleware'
-import { PERMISSION, RESOURCES } from '../../types/permissions'
-import { db } from '../../db'
-import { users } from '../../db/schema'
 
-export const usersRoute = new Hono().basePath('/users')
+import { db } from '@src/db'
+import { users } from '@src/db/schema'
+import { requirePermission } from '@src/middleware'
+import { PERMISSION, RESOURCES } from '@src/types/permissions'
+
+export const usersRoute = new Hono()
 
 // TODO: move to service
 usersRoute.get(

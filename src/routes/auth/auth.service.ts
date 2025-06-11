@@ -1,9 +1,13 @@
-import type { LoginDTO, SignUpDTO } from '../../types/user'
+import type { LoginDTO, SignUpDTO } from '@src/types/user'
 
 export const authService = {
-  async signUp(user: SignUpDTO) {},
+  async signUp(user: SignUpDTO) {
+    console.log('Sign up user:', user)
+  },
 
-  async login(user: LoginDTO) {},
+  async login(user: LoginDTO) {
+    console.log('Login user:', user)
+  },
 
   async logout() {},
 

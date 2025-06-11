@@ -1,4 +1,4 @@
-import type { userRoleEnum, userStatusEnum } from '../db/schema'
+import type { userRoleEnum, userStatusEnum } from '@src/db/schema'
 
 export type UserStatus = (typeof userStatusEnum.enumValues)[number]
 

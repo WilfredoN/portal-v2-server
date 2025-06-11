@@ -1,9 +1,6 @@
 import 'dotenv/config'
 import { Hono } from 'hono'
-import { db } from './db'
-import { users } from './db/schema'
-import { requirePermission } from './middleware'
-import { PERMISSION, RESOURCES } from './types/permissions'
+import { authRoute } from './routes/auth/auth'
 import { usersRoute } from './routes/users/users'
 
 const app = new Hono()
@@ -11,7 +8,7 @@ const app = new Hono()
 
 app.all('/', response => response.text('Hello, 42'))
 
-// app.route('/auth', authRoute)
+app.route('/auth', authRoute)
 
 app.route('/users', usersRoute)
 
