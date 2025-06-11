@@ -16,7 +16,7 @@ export const userRoleEnum = pgEnum('user_role', [
   'sdk_partner'
 ])
 
-export const permissionsEnum = pgEnum('permissions', [
+export const permissionsEnum = pgEnum('permissions_type', [
   'create',
   'view',
   'edit',

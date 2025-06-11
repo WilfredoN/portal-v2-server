@@ -32,7 +32,7 @@ export const authController = {
 
       return content.json(result)
     } catch (error) {
-      console.error(`Error: ${error}, content: ${content}`)
+      console.error(error)
 
       return content.json({ message: 'Sign up failed' }, 500)
     }
