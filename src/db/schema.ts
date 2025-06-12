@@ -25,11 +25,15 @@ export const permissionsEnum = pgEnum('permissions_type', [
 
 export const resourcesEnum = pgEnum('resources', [
   'users',
-  'plans',
   'residential_plans',
   'isp_plans',
   'serp_plans'
 ])
+
+export const roles = pgTable('roles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: userRoleEnum('name').notNull().unique()
+})
 
 export const auth = pgTable('auth', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -50,14 +54,31 @@ export const users = pgTable('users', {
   firstName: varchar('first_name', { length: 50 }).notNull(),
   lastName: varchar('last_name', { length: 50 }).notNull(),
   status: userStatusEnum('status').notNull().default('new'),
-  role: userRoleEnum('role')
+  roleId: uuid('role_id').references(() => roles.id)
 })
 
 export const permissions = pgTable('permissions', {
   id: uuid('id').primaryKey().defaultRandom(),
   permission: permissionsEnum('permission').notNull(),
-  resourcesEnum: resourcesEnum('resource').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .defaultNow()
+  resource: resourcesEnum('resource').notNull()
+})
+
+export const RolePermissions = pgTable('role_permissions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  roleId: uuid('role_id')
     .notNull()
+    .references(() => roles.id, { onDelete: 'cascade' }),
+  permissionId: uuid('permission_id')
+    .notNull()
+    .references(() => permissions.id, { onDelete: 'cascade' })
+})
+
+export const userPermissions = pgTable('user_permissions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  permissionId: uuid('permission_id')
+    .notNull()
+    .references(() => permissions.id, { onDelete: 'cascade' })
 })
