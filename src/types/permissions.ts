@@ -12,7 +12,6 @@ export type Role = (typeof ROLES)[keyof typeof ROLES]
 
 export const RESOURCES = {
   USERS: 'users',
-  PLANS: 'plans',
   RESIDENTIAL_PLANS: 'residential_plans',
   ISP_PLANS: 'isp_plans',
   SERP_PLANS: 'serp_plans'
@@ -42,21 +41,19 @@ export const ROLE_PERMISSIONS: RolePermissions = {
     can: {
       view: [
         RESOURCES.USERS,
-        RESOURCES.PLANS,
         RESOURCES.RESIDENTIAL_PLANS,
         RESOURCES.ISP_PLANS,
         RESOURCES.SERP_PLANS
       ],
-      create: [RESOURCES.PLANS],
+      create: [RESOURCES.RESIDENTIAL_PLANS],
 
-      edit: [RESOURCES.PLANS],
+      edit: [RESOURCES.RESIDENTIAL_PLANS],
       delete: [RESOURCES.USERS]
     }
   },
   user: {
     can: {
       view: [
-        RESOURCES.PLANS,
         RESOURCES.RESIDENTIAL_PLANS,
         RESOURCES.ISP_PLANS,
         RESOURCES.SERP_PLANS
