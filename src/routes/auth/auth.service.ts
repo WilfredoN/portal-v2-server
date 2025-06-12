@@ -1,5 +1,6 @@
 import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
+import { encode } from '@src/lib/hash'
 import type { LoginDTO, SignUpDTO } from '@src/types/user'
 import { eq } from 'drizzle-orm'
 
@@ -30,15 +31,10 @@ const isExist = async (email: string) => {
   return response.length > 0
 }
 
-// TODO: extract to utility, where Bun.password.hash is also abstracted
-const hashPassword = async (password: string) => {
-  return await Bun.password.hash(password)
-}
-
 // TODO: extract
 const createUser = async (user: SignUpDTO) => {
   console.log('[createUser] Hashing password for:', user.email)
-  const hashedPassword = await hashPassword(user.password)
+  const hashedPassword = await encode.hash(user.password)
 
   console.log('[createUser] Password hash:', hashedPassword)
 
