@@ -1,7 +1,7 @@
 import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
 import { encode } from '@src/lib/hash'
-import type { SignUpDTO } from '@src/types/user'
+import type { LoginDTO, SignUpDTO } from '@src/types/user'
 import { eq } from 'drizzle-orm'
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -42,6 +42,47 @@ export const create = async (user: SignUpDTO) => {
 
     return response
   })
+}
+
+export const authenticate = async (user: LoginDTO) => {
+  const [dbResponse] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, user.email))
+
+  console.log('[authenticate] User found:', dbResponse)
+
+  if (!dbResponse) {
+    throw new Error('User not found')
+  }
+
+  const [authResponse] = await db
+    .select()
+    .from(auth)
+    .where(eq(auth.identifier, user.email))
+
+  console.log('[authenticate] Auth record found:', authResponse)
+
+  if (!authResponse || !authResponse.password) {
+    throw new Error('Invalid email')
+  }
+
+  const verified = await encode.verify(user.password, authResponse.password)
+
+  console.log('[authenticate] Password verification result:', verified)
+
+  if (!verified) {
+    throw new Error('Invalid password')
+  }
+
+  return {
+    id: dbResponse.id,
+    email: dbResponse.email,
+    firstName: dbResponse.firstName,
+    lastName: dbResponse.lastName,
+    status: dbResponse.status,
+    roleId: dbResponse.roleId
+  }
 }
 
 export const validate = (user: SignUpDTO) => {

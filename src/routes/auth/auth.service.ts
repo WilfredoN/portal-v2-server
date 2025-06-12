@@ -1,5 +1,5 @@
 import type { LoginDTO, SignUpDTO } from '@src/types/user'
-import { create, isExist, validate } from './auth.utils'
+import { authenticate, create, isExist, validate } from './auth.utils'
 
 export const authService = {
   async signUp(user: SignUpDTO) {
@@ -17,7 +17,7 @@ export const authService = {
   },
 
   async login(user: LoginDTO) {
-    console.log('Login user:', user)
+    return await authenticate(user)
   },
 
   async logout() {},
