@@ -8,7 +8,7 @@ export const usersRoute = new Hono()
 
 // TODO: move to service
 usersRoute.get(
-  '/users',
+  '/',
   requirePermission(RESOURCES.USERS, PERMISSION.VIEW),
   usersController.getAll
 )
