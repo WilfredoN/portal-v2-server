@@ -1,7 +1,6 @@
 // TODO: Will it be extendable?
 export const ROLES = {
   ADMIN: 'admin',
-  USER: 'user',
   SUPERADMIN: 'superadmin',
   ENTERPRISE_CUSTOMER: 'enterprise_customer',
   SELF_SERVE_CUSTOMER: 'selfserve_customer',
