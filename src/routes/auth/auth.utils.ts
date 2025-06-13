@@ -81,7 +81,7 @@ export const authenticate = async (user: LoginDTO) => {
     firstName: dbResponse.firstName,
     lastName: dbResponse.lastName,
     status: dbResponse.status,
-    roleId: dbResponse.roleId
+    role: dbResponse.role
   }
 }
 
