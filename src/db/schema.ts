@@ -54,7 +54,7 @@ export const users = pgTable('users', {
   firstName: varchar('first_name', { length: 50 }).notNull(),
   lastName: varchar('last_name', { length: 50 }).notNull(),
   status: userStatusEnum('status').notNull().default('new'),
-  role: uuid('role').references(() => roles.id)
+  role: userRoleEnum('role')
 })
 
 export const permissions = pgTable('permissions', {
