@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { Hono } from 'hono'
-import { authRoute } from './routes/auth/auth'
-import { usersRoute } from './routes/users/users'
+import { authRoute } from './routes/auth/auth.route'
+import { usersRoute } from './routes/users/users.route'
 
 const app = new Hono()
 // TODO: Make routes as Map
