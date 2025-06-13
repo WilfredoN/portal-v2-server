@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { Hono } from 'hono'
 import { authRoute } from './routes/auth/auth.route'
 import { usersRoute } from './routes/users/users.route'
+import { testRoute } from './routes/test/test.route'
 
 const app = new Hono()
 // TODO: Make routes as Map
@@ -9,8 +10,8 @@ const app = new Hono()
 app.all('/', response => response.text('Hello, 42'))
 
 app.route('/auth', authRoute)
-
 app.route('/users', usersRoute)
+app.route('/test', testRoute)
 
 const port = parseInt(process.env.PORT!) || 3000
 
