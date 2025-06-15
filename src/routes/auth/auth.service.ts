@@ -20,9 +20,17 @@ export const authService = {
     return await authenticate(user)
   },
 
-  async logout() {},
+  async logout() {
+    throw new Error('Logout not implemented')
+  },
 
-  async forgotPassword(email: string) {},
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  async forgotPassword(email: string) {
+    throw new Error('Forgot password not implemented')
+  },
 
-  async resetPassword(token: string, newPassword: string) {}
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  async resetPassword(token: string, newPassword: string) {
+    throw new Error('Reset password not implemented')
+  }
 }

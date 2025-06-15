@@ -1,25 +1,45 @@
 import type { Context, Next } from 'hono'
-import {
-  ROLE_PERMISSIONS,
-  type Permissions,
-  type Resource,
-  type Role
-} from './types/permissions'
+import { type Permissions, type Resource, type Role } from './types/permissions'
+import { ROLE_PERMISSIONS } from './types/role-permissions'
+import type { User } from './types/user'
+import { getUserPermissions } from './db/permissions'
 
-const hasPermission = (
-  user: { role: Role },
+const hasRolePermission = (
+  role: Role,
   resource: Resource,
   permission: Permissions
 ): boolean => {
-  const rolePermissions = ROLE_PERMISSIONS[user.role]
+  const rolePermissions = ROLE_PERMISSIONS[role]
+  return !!rolePermissions?.can[permission]?.includes(resource)
+}
 
-  if (!rolePermissions) {
-    return false
+const hasUserPermissionOverride = (
+  userPermissions: Array<{ resource: Resource; permission: Permissions }>,
+  resource: Resource,
+  permission: Permissions
+): boolean => {
+  return userPermissions.some(
+    perm => perm.resource === resource && perm.permission === permission
+  )
+}
+
+const hasPermission = async (
+  userId: string,
+  userRole: Role,
+  resource: Resource,
+  permission: Permissions
+): Promise<boolean> => {
+  if (hasRolePermission(userRole, resource, permission)) {
+    return true
   }
 
-  const allowedResources = rolePermissions.can[permission]
+  const userPerms = await getUserPermissions(userId)
 
-  return allowedResources?.includes(resource) || false
+  if (hasUserPermissionOverride(userPerms, resource, permission)) {
+    return true
+  }
+
+  return false
 }
 
 export const requirePermission = (
@@ -27,16 +47,42 @@ export const requirePermission = (
   permission: Permissions
 ) => {
   return async (context: Context, next: Next) => {
-    const user = context.get('user')
+    const user: User = context.get('user')
 
-    if (!user || !user.role) {
-      return context.json({ message: 'Unauthorized' }, 401)
+    if (!user?.id) {
+      return context.json({ message: 'Unauthorized: User not found' }, 401)
     }
 
-    if (!hasPermission(user, resource, permission)) {
-      return context.json({ message: 'Forbidden' }, 403)
+    if (!user.role) {
+      return context.json(
+        { message: 'Unauthorized: User role not assigned' },
+        401
+      )
     }
 
-    await next()
+    try {
+      const hasAccess = await hasPermission(
+        user.id,
+        user.role,
+        resource,
+        permission
+      )
+
+      if (!hasAccess) {
+        return context.json(
+          {
+            message: 'Forbidden: Insufficient permissions',
+            required: { resource, permission }
+          },
+          403
+        )
+      }
+
+      await next()
+    } catch (error) {
+      console.error('Permission check failed:', error)
+
+      return context.json({ message: 'Internal Server Error' }, 500)
+    }
   }
 }
