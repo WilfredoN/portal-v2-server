@@ -39,20 +39,3 @@ export type UserPermissionsResponse = {
   core: Array<{ resource: Resource; permission: Permissions }>
   override: Array<{ resource: Resource; permission: Permissions }>
 }
-
-export const ROLE_PERMISSIONS: RolePermissions = {
-  admin: {
-    can: {
-      view: [
-        RESOURCES.USERS,
-        RESOURCES.RESIDENTIAL_PLANS,
-        RESOURCES.ISP_PLANS,
-        RESOURCES.SERP_PLANS
-      ],
-      create: [RESOURCES.RESIDENTIAL_PLANS],
-
-      edit: [RESOURCES.RESIDENTIAL_PLANS],
-      delete: [RESOURCES.USERS]
-    }
-  }
-}

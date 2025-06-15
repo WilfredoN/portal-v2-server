@@ -1,10 +1,6 @@
 import type { Context, Next } from 'hono'
-import {
-  ROLE_PERMISSIONS,
-  type Permissions,
-  type Resource,
-  type Role
-} from './types/permissions'
+import { type Permissions, type Resource, type Role } from './types/permissions'
+import { ROLE_PERMISSIONS } from './types/role-permissions'
 
 const hasPermission = (
   user: { role: Role },
