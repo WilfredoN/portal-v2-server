@@ -3,10 +3,19 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/pg": "^8.15.4",
-    "drizzle-kit": "^0.31.1"
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9.29.0",
+    "eslint-plugin-drizzle": "^0.2.3",
+    "eslint-plugin-unused-imports": "^4.1.4"
   },
   "peerDependencies": {
     "typescript": "^5"
