@@ -9,10 +9,6 @@ export const authController = {
 
       const result = await authService.login(body)
 
-      if (result === undefined || result === null) {
-        throw new Error('Login failed')
-      }
-
       const token = await sign(
         {
           sub: result.id,
