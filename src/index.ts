@@ -3,9 +3,19 @@ import { Hono } from 'hono'
 import { authRoute } from './routes/auth/auth.route'
 import { usersRoute } from './routes/users/users.route'
 import { testRoute } from './routes/test/test.route'
+import { cors } from 'hono/cors'
 
 const app = new Hono()
 // TODO: Make routes as Map
+app.use(
+  '*',
+  cors({
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  })
+)
 
 app.all('/', response => response.text('Hello, 42'))
 
