@@ -51,5 +51,9 @@ export const authController = {
 
       return content.json({ message: 'Sign up failed' }, 500)
     }
+  },
+  async logout(content: Context) {
+    content.header('Set-Cookie', 'token=; HttpOnly; Path=/; Max-Age=0')
+    return content.json({ message: 'Logged out' })
   }
 }

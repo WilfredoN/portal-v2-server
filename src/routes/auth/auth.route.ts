@@ -11,9 +11,8 @@ authRoute.post('/login', authController.login)
 
 authRoute.post('/sign-up', authController.signUp)
 
-authRoute.post('/logout', content => {
-  return content.json({ message: 'Logout endpoint' })
-})
+authRoute.post('/logout', authController.logout)
+
 authRoute.post('/forgot-password', content => {
   return content.json({ message: 'Forgot password endpoint' })
 })
