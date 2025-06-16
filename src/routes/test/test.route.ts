@@ -23,7 +23,7 @@ testRoute.post('/change-status', async content => {
   try {
     const { email, status } = await content.req.json()
     if (!email || !status) {
-      return content.json({ message: 'Email and status is required' }, 400)
+      return content.json({ message: 'Email and status are required' }, 400)
     }
     const response = await updateUserStatusByEmail(email, status)
     if (response.length === 0) {
