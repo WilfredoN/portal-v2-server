@@ -1,20 +1,17 @@
+import 'dotenv/config'
 import { Hono } from 'hono'
-import { db } from './db'
-import { users } from './db/schema'
+import { authRoute } from './routes/auth/auth.route'
+import { usersRoute } from './routes/users/users.route'
+import { testRoute } from './routes/test/test.route'
 
 const app = new Hono()
+// TODO: Make routes as Map
 
-app.get('/', response => response.text('Hello, 42'))
+app.all('/', response => response.text('Hello, 42'))
 
-app.get('/users', async response => {
-  const request = await db.select().from(users)
-
-  if (request.length === 0) {
-    return response.json({ message: 'No users found' }, 404)
-  }
-
-  return response.json(request)
-})
+app.route('/auth', authRoute)
+app.route('/users', usersRoute)
+app.route('/test', testRoute)
 
 const port = parseInt(process.env.PORT!) || 3000
 
