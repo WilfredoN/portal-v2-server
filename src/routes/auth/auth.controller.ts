@@ -23,6 +23,10 @@ export const authController = {
         process.env.JWT_SECRET!
       )
 
+      content.header(
+        'Set-Cookie',
+        `token=${token}; HttpOnly; Path=/; SameSite=Strict`
+      )
       return content.json({ ...result, token })
     } catch (error) {
       console.error(error)
