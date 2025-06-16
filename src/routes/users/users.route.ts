@@ -6,7 +6,6 @@ import { usersController } from './users.controller'
 
 export const usersRoute = new Hono()
 
-// TODO: move to service
 usersRoute.get(
   '/',
   requirePermission(RESOURCES.USERS, PERMISSION.VIEW),
