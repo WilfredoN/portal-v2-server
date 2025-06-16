@@ -4,11 +4,16 @@ import { verify } from 'hono/jwt'
 export const authMiddleware = () => {
   return async (context: Context, next: Next) => {
     const header = context.req.header('Authorization')
+    let token = header?.startsWith('Bearer ') ? header.slice(7) : undefined
 
-    if (!header || !header.startsWith('Bearer ')) {
+    if (!token) {
+      const cookie = context.req.header('Cookie')
+      token = cookie?.match(/token=([^;]+)/)?.[1]
+    }
+
+    if (!token) {
       return context.json({ message: 'Unauthorized' }, 401)
     }
-    const token = header.slice(7)
     try {
       const payload = await verify(token, process.env.JWT_SECRET!)
       context.set('user', payload)
