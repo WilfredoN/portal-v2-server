@@ -1,5 +1,5 @@
 import type { Context, Next } from 'hono'
-import { verify } from 'hono/jwt'
+import { sign, verify } from 'hono/jwt'
 import { appError } from '@src/lib/errors/app-error'
 
 const extractToken = (context: Context): string | undefined => {
@@ -12,6 +12,22 @@ const extractToken = (context: Context): string | undefined => {
   }
 
   return token
+}
+
+export const generateToken = async (payload: {
+  id: string
+  email: string
+  role: string | null
+}) => {
+  return await sign(
+    {
+      sub: payload.id,
+      email: payload.email,
+      role: payload.role,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60
+    },
+    process.env.JWT_SECRET!
+  )
 }
 
 export const authMiddleware = () => {

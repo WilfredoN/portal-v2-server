@@ -1,6 +1,6 @@
 import type { Context } from 'hono'
 import { authService } from './auth.service'
-import { sign } from 'hono/jwt'
+import { generateToken } from '@src/lib/jwt'
 
 export const authController = {
   async login(content: Context) {
@@ -9,15 +9,11 @@ export const authController = {
 
       const result = await authService.login(body)
 
-      const token = await sign(
-        {
-          sub: result.id,
-          email: result.email,
-          role: result.role,
-          exp: Math.floor(Date.now() / 1000) + 60 * 60
-        },
-        process.env.JWT_SECRET!
-      )
+      const token = await generateToken({
+        id: result.id,
+        email: result.email,
+        role: result.role
+      })
 
       content.header(
         'Set-Cookie',
