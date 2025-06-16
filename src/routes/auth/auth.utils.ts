@@ -1,8 +1,9 @@
 import { db } from '@src/db'
-import { auth, users } from '@src/db/schema'
+import { auth } from '@src/db/schema'
 import { encode } from '@src/lib/hash'
 import type { LoginDTO, SignUpDTO } from '@src/types/user'
 import { eq } from 'drizzle-orm'
+import { insertUser, selectUserByEmail } from '@src/db/users'
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -13,14 +14,7 @@ export const create = async (user: SignUpDTO) => {
   return await db.transaction(async transaction => {
     const hashedPassword = await encode.hash(user.password)
 
-    const [response] = await transaction
-      .insert(users)
-      .values({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName
-      })
-      .returning()
+    const [response] = await insertUser(user)
 
     if (!response) {
       console.error(
@@ -45,10 +39,7 @@ export const create = async (user: SignUpDTO) => {
 }
 
 export const authenticate = async (user: LoginDTO) => {
-  const [dbResponse] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, user.email))
+  const [dbResponse] = await selectUserByEmail(user.email)
 
   console.log('[authenticate] User found:', dbResponse)
 
@@ -102,6 +93,6 @@ export const validate = (user: SignUpDTO) => {
 }
 
 export const isExist = async (email: string) => {
-  const response = await db.select().from(users).where(eq(users.email, email))
+  const response = await selectUserByEmail(email)
   return response.length > 0
 }

@@ -30,11 +30,6 @@ export const resourcesEnum = pgEnum('resources', [
   'serp_plans'
 ])
 
-export const roles = pgTable('roles', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: userRoleEnum('name').notNull().unique()
-})
-
 export const auth = pgTable('auth', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -61,16 +56,6 @@ export const permissions = pgTable('permissions', {
   id: uuid('id').primaryKey().defaultRandom(),
   permission: permissionsEnum('permission').notNull(),
   resource: resourcesEnum('resource').notNull()
-})
-
-export const RolePermissions = pgTable('role_permissions', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  roleId: uuid('role_id')
-    .notNull()
-    .references(() => roles.id, { onDelete: 'cascade' }),
-  permissionId: uuid('permission_id')
-    .notNull()
-    .references(() => permissions.id, { onDelete: 'cascade' })
 })
 
 export const userPermissions = pgTable('user_permissions', {
