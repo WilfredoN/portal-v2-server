@@ -1,16 +1,17 @@
 import type { LoginDTO, SignUpDTO } from '@src/types/user'
 import { authenticate, create, isExist, validate } from './auth.utils'
+import { appError } from '@src/lib/errors/app-error'
 
 export const authService = {
   async signUp(user: SignUpDTO) {
     const validation = validate(user)
 
     if (validation) {
-      throw new Error(validation.error)
+      throw appError('validation/failed', validation.error, 400)
     }
 
     if (await isExist(user.email)) {
-      throw new Error('User already exists')
+      throw appError('auth/user-exists', 'User already exists', 409)
     }
 
     return await create(user)
@@ -21,16 +22,24 @@ export const authService = {
   },
 
   async logout() {
-    throw new Error('Logout not implemented')
+    throw appError('internal/server-error', 'Logout not implemented', 501)
   },
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   async forgotPassword(email: string) {
-    throw new Error('Forgot password not implemented')
+    throw appError(
+      'internal/server-error',
+      'Forgot password not implemented',
+      501
+    )
   },
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   async resetPassword(token: string, newPassword: string) {
-    throw new Error('Reset password not implemented')
+    throw appError(
+      'internal/server-error',
+      'Reset password not implemented',
+      501
+    )
   }
 }

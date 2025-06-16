@@ -1,4 +1,5 @@
 import { updateUserStatusByEmail } from '@src/db/users'
+import { appError } from '@src/lib/errors/app-error'
 import { Hono } from 'hono'
 
 export const testRoute = new Hono()
@@ -15,7 +16,7 @@ testRoute.get('/', async content => {
     return content.json(response)
   } catch (error) {
     console.error('Error in test route:', error)
-    return content.json({ message: 'Internal Server Error' }, 500)
+    throw error
   }
 })
 
@@ -23,11 +24,11 @@ testRoute.post('/change-status', async content => {
   try {
     const { email, status } = await content.req.json()
     if (!email || !status) {
-      return content.json({ message: 'Email and status are required' }, 400)
+      throw appError('validation/failed', 'Email and status are required', 400)
     }
     const response = await updateUserStatusByEmail(email, status)
     if (response.length === 0) {
-      return content.json({ message: 'User not found' }, 404)
+      throw new Error('User not found')
     }
     return content.json(
       { message: 'User verified successfully', user: response[0] },
@@ -35,6 +36,6 @@ testRoute.post('/change-status', async content => {
     )
   } catch (error) {
     console.error('Error verifying user:', error)
-    return content.json({ message: 'Internal Server Error' }, 500)
+    throw error
   }
 })

@@ -3,6 +3,7 @@ import { type Permissions, type Resource, type Role } from './types/permissions'
 import { ROLE_PERMISSIONS } from './types/role-permissions'
 import type { User } from './types/user'
 import { getUserPermissions } from './db/permissions'
+import { appError } from '@src/lib/errors/app-error'
 
 const hasRolePermission = (
   role: Role,
@@ -50,12 +51,13 @@ export const requirePermission = (
     const user: User = context.get('user')
 
     if (!user?.id) {
-      return context.json({ message: 'Unauthorized: User not found' }, 401)
+      throw appError('auth/unauthorized', 'Unauthorized: User not found', 401)
     }
 
     if (!user.role) {
-      return context.json(
-        { message: 'Unauthorized: User role not assigned' },
+      throw appError(
+        'auth/unauthorized',
+        'Unauthorized: User role not assigned',
         401
       )
     }
@@ -69,20 +71,18 @@ export const requirePermission = (
       )
 
       if (!hasAccess) {
-        return context.json(
-          {
-            message: 'Forbidden: Insufficient permissions',
-            required: { resource, permission }
-          },
-          403
+        throw appError(
+          'auth/forbidden',
+          'Forbidden: Insufficient permissions',
+          403,
+          { resource, permission }
         )
       }
 
       await next()
     } catch (error) {
       console.error('Permission check failed:', error)
-
-      return context.json({ message: 'Internal Server Error' }, 500)
+      throw error
     }
   }
 }

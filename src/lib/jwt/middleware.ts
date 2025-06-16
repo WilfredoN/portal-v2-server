@@ -1,5 +1,6 @@
 import type { Context, Next } from 'hono'
 import { verify } from 'hono/jwt'
+import { appError } from '@src/lib/errors/app-error'
 
 const extractToken = (context: Context): string | undefined => {
   const header = context.req.header('Authorization')
@@ -18,7 +19,7 @@ export const authMiddleware = () => {
     const token = extractToken(context)
 
     if (!token) {
-      return context.json({ message: 'Unauthorized' }, 401)
+      throw appError('auth/unauthorized', 'Unauthorized', 401)
     }
     try {
       const payload = await verify(token, process.env.JWT_SECRET!)
@@ -26,7 +27,7 @@ export const authMiddleware = () => {
       await next()
     } catch (error) {
       console.error('JWT verification failed:', error)
-      return context.json({ message: 'Unauthorized' }, 401)
+      throw appError('auth/unauthorized', 'Unauthorized', 401)
     }
   }
 }

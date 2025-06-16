@@ -4,8 +4,12 @@ import { authRoute } from './routes/auth/auth.route'
 import { usersRoute } from './routes/users/users.route'
 import { testRoute } from './routes/test/test.route'
 import { cors } from 'hono/cors'
+import { errorHandler } from './lib/errors/error-handler'
 
 const app = new Hono()
+
+app.use('*', errorHandler())
+
 // TODO: Make routes as Map
 app.use(
   '*',

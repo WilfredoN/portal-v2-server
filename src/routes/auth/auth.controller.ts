@@ -10,7 +10,7 @@ export const authController = {
       const result = await authService.login(body)
 
       if (result === undefined || result === null) {
-        return content.json({ message: 'Login failed' }, 500)
+        throw new Error('Login failed')
       }
 
       const token = await sign(
@@ -30,8 +30,7 @@ export const authController = {
       return content.json({ ...result, token })
     } catch (error) {
       console.error(error)
-
-      return content.json({ message: 'Login failed' }, 500)
+      throw error
     }
   },
 
@@ -42,14 +41,13 @@ export const authController = {
       const result = await authService.signUp(body)
 
       if (result === undefined || result === null) {
-        return content.json({ message: 'Sign up failed' }, 500)
+        throw new Error('Sign up failed')
       }
 
       return content.json(result)
     } catch (error) {
       console.error(error)
-
-      return content.json({ message: 'Sign up failed' }, 500)
+      throw error
     }
   },
   async logout(content: Context) {

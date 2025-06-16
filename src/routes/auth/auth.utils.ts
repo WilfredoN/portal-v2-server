@@ -4,6 +4,7 @@ import { encode } from '@src/lib/hash'
 import type { LoginDTO, SignUpDTO } from '@src/types/user'
 import { eq } from 'drizzle-orm'
 import { insertUser, selectUserByEmail } from '@src/db/users'
+import { appError } from '@src/lib/errors/app-error'
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -21,7 +22,7 @@ export const create = async (user: SignUpDTO) => {
         '[createUser] Failed to create user in users table:',
         user.email
       )
-      throw new Error('Failed to create user')
+      throw appError('db/not-found', 'Failed to create user', 500)
     }
 
     console.log('[createUser] Inserting user into auth table:', user.email)
@@ -44,7 +45,7 @@ export const authenticate = async (user: LoginDTO) => {
   console.log('[authenticate] User found:', dbResponse)
 
   if (!dbResponse) {
-    throw new Error('User not found')
+    throw appError('auth/user-not-found', 'User not found', 404)
   }
 
   const [authResponse] = await db
@@ -55,7 +56,7 @@ export const authenticate = async (user: LoginDTO) => {
   console.log('[authenticate] Auth record found:', authResponse)
 
   if (!authResponse || !authResponse.password) {
-    throw new Error('Invalid email')
+    throw appError('auth/invalid-credentials', 'Invalid email', 401)
   }
 
   const verified = await encode.verify(user.password, authResponse.password)
@@ -63,7 +64,7 @@ export const authenticate = async (user: LoginDTO) => {
   console.log('[authenticate] Password verification result:', verified)
 
   if (!verified) {
-    throw new Error('Invalid password')
+    throw appError('auth/invalid-credentials', 'Invalid password', 401)
   }
 
   return {
