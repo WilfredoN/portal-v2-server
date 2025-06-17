@@ -1,9 +1,9 @@
 import type { Context, Next } from 'hono'
 import { type Permissions, type Resource, type Role } from './types/permissions'
 import { ROLE_PERMISSIONS } from './types/role-permissions'
-import type { User } from './types/user'
 import { getUserPermissions } from './db/permissions'
 import { appError } from '@src/lib/errors/app-error'
+import type { UserDTO } from './routes/user/user.types'
 
 const hasRolePermission = (
   role: Role,
@@ -48,7 +48,7 @@ export const requirePermission = (
   permission: Permissions
 ) => {
   return async (context: Context, next: Next) => {
-    const user: User = context.get('user')
+    const user: UserDTO = context.get('user')
 
     if (!user?.id) {
       throw appError('auth/unauthorized', 'Unauthorized: User not found', 401)

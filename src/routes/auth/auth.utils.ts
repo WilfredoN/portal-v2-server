@@ -6,8 +6,6 @@ import { eq } from 'drizzle-orm'
 import { insertUser, selectUserByEmail } from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
 // TODO: extract (env - ?)
 const EMAIL_PROVIDER = 'local'
 
@@ -75,22 +73,6 @@ export const authenticate = async (user: LoginDTO) => {
     status: dbResponse.status,
     role: dbResponse.role
   }
-}
-
-export const validate = (user: SignUpDTO) => {
-  if (!user.email || !user.password || !user.firstName || !user.lastName) {
-    return { error: 'Missing required fields' }
-  }
-
-  if (user.password.length < 8) {
-    return { error: 'Password must be at least 8 characters long' }
-  }
-
-  if (!emailRegex.test(user.email)) {
-    return { error: 'Invalid email format' }
-  }
-
-  return null
 }
 
 export const isExist = async (email: string) => {

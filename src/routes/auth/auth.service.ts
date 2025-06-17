@@ -1,20 +1,26 @@
+import { ZodError } from 'zod'
 import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
-import { authenticate, create, isExist, validate } from './auth.utils'
+import { signUpSchema } from './auth.schema'
+import { authenticate, create, isExist } from './auth.utils'
 import { appError } from '@src/lib/errors/app-error'
 
 export const authService = {
   async signUp(user: SignUpDTO) {
-    const validation = validate(user)
+    try {
+      const body = signUpSchema.parse(user)
 
-    if (validation) {
-      throw appError('validation/failed', validation.error, 400)
+      if (await isExist(body.email)) {
+        throw appError('auth/user-exists', 'User already exists', 409)
+      }
+
+      return await create(body)
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.error('Zod validation error:', error)
+        throw appError('validation/failed', undefined, 400, error.issues)
+      }
+      throw error
     }
-
-    if (await isExist(user.email)) {
-      throw appError('auth/user-exists', 'User already exists', 409)
-    }
-
-    return await create(user)
   },
 
   async login(user: LoginDTO) {

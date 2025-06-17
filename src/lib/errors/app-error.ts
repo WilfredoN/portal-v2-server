@@ -12,7 +12,7 @@ export type AppErrorCode =
 
 export type AppError = {
   code: AppErrorCode
-  message: string
+  message?: string
   status: number
   details?: unknown
   isApplicationError: true
@@ -20,8 +20,8 @@ export type AppError = {
 
 export const appError = (
   code: AppErrorCode,
-  message: string,
-  status = 400,
+  message?: string,
+  status: number = 400,
   details?: unknown
 ): AppError => ({
   code,

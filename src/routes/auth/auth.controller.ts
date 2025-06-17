@@ -32,10 +32,6 @@ export const authController = {
 
       const result = await authService.signUp(body)
 
-      if (result === undefined || result === null) {
-        throw new Error('Sign up failed')
-      }
-
       return content.json(result)
     } catch (error) {
       console.error(error)
