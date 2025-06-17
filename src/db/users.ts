@@ -39,8 +39,10 @@ export const getAllUsers = async () => {
 }
 
 export const deleteAllUsers = async () => {
-  // eslint-disable-next-line drizzle/enforce-delete-with-where
-  await db.delete(auth)
-  // eslint-disable-next-line drizzle/enforce-delete-with-where
-  return await db.delete(users).returning()
+  return await db.transaction(async (trx) => {
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
+    await trx.delete(auth)
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
+    return await trx.delete(users).returning()
+  })
 }
