@@ -1,10 +1,10 @@
 import type { z } from 'zod'
 import type {
-  UserRoleSchema,
-  UserSchema,
-  UserStatusSchema
+  userRoleSchema,
+  userSchema,
+  userStatusSchema
 } from './user.schema'
 
-export type User = z.infer<typeof UserSchema>
-export type UserStatus = z.infer<typeof UserStatusSchema>
-export type UserRole = z.infer<typeof UserRoleSchema>
+export type UserDTO = z.infer<typeof userSchema>
+export type UserStatusDTO = z.infer<typeof userStatusSchema>
+export type UserRoleDTO = z.infer<typeof userRoleSchema>

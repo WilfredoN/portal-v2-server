@@ -1,5 +1,5 @@
 import type { z } from 'zod'
-import type { LoginSchema, SignUpSchema } from './auth.schema'
+import type { loginSchema, signUpSchema } from './auth.schema'
 
-export type SignUpDTO = z.infer<typeof SignUpSchema>
-export type LoginDTO = z.infer<typeof LoginSchema>
+export type SignUpDTO = z.infer<typeof signUpSchema>
+export type LoginDTO = z.infer<typeof loginSchema>

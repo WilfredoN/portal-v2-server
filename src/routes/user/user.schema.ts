@@ -1,6 +1,7 @@
 import { z } from 'zod'
+import { email, firstName, lastName } from '@shared/schema'
 
-export const UserStatusSchema = z.enum([
+export const userStatusSchema = z.enum([
   'new',
   'verified',
   'active',
@@ -8,7 +9,7 @@ export const UserStatusSchema = z.enum([
   'deleted'
 ])
 
-export const UserRoleSchema = z.enum([
+export const userRoleSchema = z.enum([
   'superadmin',
   'admin',
   'enterprise_customer',
@@ -16,11 +17,11 @@ export const UserRoleSchema = z.enum([
   'sdk_partner'
 ])
 
-export const UserSchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  firstName: z.string().min(1).max(50),
-  lastName: z.string().min(1).max(50),
-  status: UserStatusSchema.default('new'),
-  role: UserRoleSchema.nullable()
+export const userSchema = z.object({
+  id: z.string().uuid({ message: 'Invalid UUID format.' }),
+  email: email,
+  firstName: firstName,
+  lastName: lastName,
+  status: userStatusSchema.default('new'),
+  role: userRoleSchema.nullable()
 })

@@ -1,15 +1,16 @@
 import { z } from 'zod'
+import { email, password, firstName, lastName } from '@shared/schema'
 
-export const SignUpSchema = z.object({
-  email: z.string().email(),
-  firstName: z.string().min(1).max(50),
-  lastName: z.string().min(1).max(50),
-  password: z.string().min(8)
+export const loginSchema = z.object({
+  email,
+  password
 })
 
-export const LoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
+export const signUpSchema = z.object({
+  email,
+  password,
+  firstName,
+  lastName
 })
 
 export const AuthSchema = z.object({

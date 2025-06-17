@@ -3,7 +3,7 @@ import { authService } from './auth.service'
 import { generateToken } from '@src/lib/jwt'
 
 export const authController = {
-  async login(content: Context) {
+  async login(content: Context): Promise<Response> {
     try {
       const body = await content.req.json()
 
@@ -26,7 +26,7 @@ export const authController = {
     }
   },
 
-  async signUp(content: Context) {
+  async signUp(content: Context): Promise<Response> {
     try {
       const body = await content.req.json()
 

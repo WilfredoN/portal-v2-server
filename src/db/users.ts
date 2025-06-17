@@ -2,7 +2,7 @@ import { db } from '@src/db'
 import { users } from '@src/db/schema'
 import { eq } from 'drizzle-orm'
 import type { SignUpDTO } from '@src/routes/auth/auth.types'
-import type { UserStatus } from '@src/routes/user/user.types'
+import type { UserStatusDTO } from '@src/routes/user/user.types'
 
 export const insertUser = async (user: SignUpDTO) => {
   return await db
@@ -25,7 +25,7 @@ export const selectUserById = async (id: string) => {
 
 export const updateUserStatusByEmail = async (
   email: string,
-  status: UserStatus
+  status: UserStatusDTO
 ) => {
   return await db
     .update(users)
