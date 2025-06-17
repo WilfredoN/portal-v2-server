@@ -1,4 +1,4 @@
-import { updateUserStatusByEmail } from '@src/db/users'
+import { deleteAllUsers, updateUserStatusByEmail } from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
 import { Hono } from 'hono'
 
@@ -28,4 +28,19 @@ testRoute.post('/change-status', async content => {
     { message: 'User verified successfully', user: response[0] },
     200
   )
+})
+
+testRoute.post('/clear-users', async context => {
+  try {
+    const deletedUsers = await deleteAllUsers()
+
+    return context.json(
+      { message: `${deletedUsers.length} users deleted successfully` },
+      200
+    )
+  } catch (error) {
+    console.error('Error deleting users:', error)
+
+    throw appError('internal/server-error', 'Failed to delete users', 500)
+  }
 })

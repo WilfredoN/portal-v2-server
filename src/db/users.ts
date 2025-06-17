@@ -1,5 +1,5 @@
 import { db } from '@src/db'
-import { users } from '@src/db/schema'
+import { auth, users } from '@src/db/schema'
 import { eq } from 'drizzle-orm'
 import type { SignUpDTO } from '@src/routes/auth/auth.types'
 import type { UserStatusDTO } from '@src/routes/user/user.types'
@@ -36,4 +36,11 @@ export const updateUserStatusByEmail = async (
 
 export const getAllUsers = async () => {
   return await db.select().from(users)
+}
+
+export const deleteAllUsers = async () => {
+  // eslint-disable-next-line drizzle/enforce-delete-with-where
+  await db.delete(auth)
+  // eslint-disable-next-line drizzle/enforce-delete-with-where
+  return await db.delete(users).returning()
 }
