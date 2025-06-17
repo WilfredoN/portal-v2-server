@@ -1,4 +1,4 @@
-import { getUsers } from './users.service'
+import { getUsers } from './user.service'
 import type { Context } from 'hono'
 
 export const usersController = {
