@@ -1,6 +1,6 @@
 import { ZodError } from 'zod'
 import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
-import { signUpSchema } from './auth.schema'
+import { loginSchema, signUpSchema } from './auth.schema'
 import { authenticate, create, isExist } from './auth.utils'
 import { appError } from '@src/lib/errors/app-error'
 
@@ -24,7 +24,16 @@ export const authService = {
   },
 
   async login(user: LoginDTO) {
-    return await authenticate(user)
+    try {
+      const body = loginSchema.parse(user)
+      return await authenticate(body)
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.error('Zod validation error:', error)
+        throw appError('validation/failed', undefined, 400, error.issues)
+      }
+      throw error
+    }
   },
 
   async logout() {
