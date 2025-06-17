@@ -2,6 +2,8 @@ import type { Context, Next } from 'hono'
 import { sign, verify } from 'hono/jwt'
 import { appError } from '@src/lib/errors/app-error'
 
+export const JWT_EXPIRE_TIME = 60 * 60
+
 const extractToken = (context: Context): string | undefined => {
   const header = context.req.header('Authorization')
   let token = header?.startsWith('Bearer ') ? header.slice(7) : undefined
@@ -24,7 +26,7 @@ export const generateToken = async (payload: {
       sub: payload.id,
       email: payload.email,
       role: payload.role,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60
+      exp: Math.floor(Date.now() / 1000) + JWT_EXPIRE_TIME
     },
     process.env.JWT_SECRET!
   )
