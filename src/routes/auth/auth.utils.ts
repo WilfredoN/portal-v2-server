@@ -1,7 +1,7 @@
 import { db } from '@src/db'
 import { auth } from '@src/db/schema'
 import { encode } from '@src/lib/hash'
-import type { LoginDTO, SignUpDTO } from '@src/types/user'
+import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
 import { eq } from 'drizzle-orm'
 import { insertUser, selectUserByEmail } from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'

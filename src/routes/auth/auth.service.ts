@@ -1,4 +1,4 @@
-import type { LoginDTO, SignUpDTO } from '@src/types/user'
+import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
 import { authenticate, create, isExist, validate } from './auth.utils'
 import { appError } from '@src/lib/errors/app-error'
 

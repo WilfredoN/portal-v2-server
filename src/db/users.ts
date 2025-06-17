@@ -1,8 +1,8 @@
 import { db } from '@src/db'
 import { users } from '@src/db/schema'
 import { eq } from 'drizzle-orm'
-import type { SignUpDTO } from '@src/types/user'
-import { userStatusEnum } from '@src/db/schema'
+import type { SignUpDTO } from '@src/routes/auth/auth.types'
+import type { UserStatus } from '@src/routes/user/user.types'
 
 export const insertUser = async (user: SignUpDTO) => {
   return await db
@@ -25,7 +25,7 @@ export const selectUserById = async (id: string) => {
 
 export const updateUserStatusByEmail = async (
   email: string,
-  status: (typeof userStatusEnum.enumValues)[number]
+  status: UserStatus
 ) => {
   return await db
     .update(users)
