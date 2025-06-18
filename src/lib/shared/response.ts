@@ -34,8 +34,16 @@ export interface ApiErrorResponse extends ApiResponseBase {
 
 export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse
 
+/**
+ * Returns the current timestamp in ISO format.
+ */
 const now = () => new Date().toISOString()
 
+/**
+ * Extracts the request path from a context object or string.
+ * @param input Context object or string path.
+ * @returns The path string, if available.
+ */
 const extractPath = (input?: { req?: { path?: string } } | string): string | undefined => {
   if (!input) {
     return undefined
@@ -45,6 +53,16 @@ const extractPath = (input?: { req?: { path?: string } } | string): string | und
   }
   return input.req?.path
 }
+
+/**
+ * Creates a standardized API success response.
+ * @template T Type of the response data.
+ * @param data The response data.
+ * @param code HTTP status code (default: 200).
+ * @param meta Optional metadata.
+ * @param context Optional context or path.
+ * @returns ApiSuccessResponse<T>
+ */
 export const success = <T>(
   data: T,
   code: ContentfulStatusCode = 200,
@@ -60,6 +78,18 @@ export const success = <T>(
   ...(extractPath(context) ? { path: extractPath(context) } : {}),
 })
 
+/**
+ * Creates a standardized API error response.
+ * @param code HTTP status code.
+ * @param message Error message.
+ * @param details Optional error details.
+ * @param errorCode Optional error code.
+ * @param meta Optional metadata.
+ * @param context Optional context or path.
+ * @param field Optional field related to the error.
+ * @param type Optional error type.
+ * @returns ApiErrorResponse
+ */
 export const error = (
   code: ContentfulStatusCode,
   message: string,
