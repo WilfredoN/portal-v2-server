@@ -1,8 +1,9 @@
-import type { UserDTO } from '@src/routes/user/user.types'
+import type { UserDTO } from '@src/routes/user/user.schema'
 import type { Permissions, Resource } from '@src/types/permissions'
 import type { Context, Next } from 'hono'
 
 import { appError } from '@src/lib/errors/app-error'
+import { logger } from '@src/lib/logger'
 import { hasPermission } from '@src/lib/shared/permissions'
 
 export const requirePermission = (
@@ -43,7 +44,7 @@ export const requirePermission = (
 
       await next()
     } catch (error) {
-      console.error('Permission check failed:', error)
+      logger.error('Permission check failed:', error)
       throw error
     }
   }

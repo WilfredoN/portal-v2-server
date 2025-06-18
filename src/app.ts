@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 
 import { errorHandler } from './lib/errors/error-handler'
+import { logger } from './lib/logger'
 import { authRoute } from './routes/auth/auth.route'
 import { testRoute } from './routes/test/test.route'
 import { usersRoute } from './routes/user/user.route'
@@ -32,7 +33,7 @@ const port = Number.parseInt(process.env.PORT!) || 3000
 
 const Massive = `\x1B[38;5;208mMassive\x1B[0m`
 
-console.log(`${Massive} Bun + Hono server running...`)
+logger.info(`${Massive} Bun + Hono server running on port ${port}`)
 
 export default {
   port,

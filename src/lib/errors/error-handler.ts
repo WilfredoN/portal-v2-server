@@ -3,6 +3,8 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
 import type { AppError } from './app-error'
 
+import { logger } from '../logger'
+
 export const errorHandler = () => {
   return async (context: Context, next: Next) => {
     try {
@@ -21,7 +23,7 @@ export const errorHandler = () => {
         )
       }
 
-      console.error('Unhandled error:', error)
+      logger.error('Unhandled error:', error)
 
       return context.json(
         {

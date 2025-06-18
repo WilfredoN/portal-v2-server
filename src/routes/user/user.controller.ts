@@ -1,5 +1,7 @@
 import type { Context } from 'hono'
 
+import { logger } from '@src/lib/logger'
+
 import { getUsers } from './user.service'
 
 export const usersController = {
@@ -9,7 +11,7 @@ export const usersController = {
 
       return context.json(users)
     } catch (error) {
-      console.error('Error fetching users:', error)
+      logger.error('Error fetching users:', error)
       throw error
     }
   },

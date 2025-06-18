@@ -1,5 +1,6 @@
 import { deleteAllUsers, updateUserStatusByEmail } from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
+import { logger } from '@src/lib/logger'
 import { Hono } from 'hono'
 
 export const testRoute = new Hono()
@@ -39,7 +40,7 @@ testRoute.post('/clear-users', async (context) => {
       200,
     )
   } catch (error) {
-    console.error('Error deleting users:', error)
+    logger.error('Error deleting users:', error)
 
     throw appError('internal/server-error', 'Failed to delete users', 500)
   }
