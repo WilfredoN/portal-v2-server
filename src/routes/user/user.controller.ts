@@ -6,9 +6,10 @@ import { getUsers } from './user.service'
 
 export const usersController = {
   async getAll(context: Context): Promise<Response> {
+    logger.info('API: GET /users called')
     try {
       const users = await getUsers()
-
+      logger.info('API: GET /users success', { count: users.length })
       return context.json(users)
     } catch (error) {
       logger.error('Error fetching users:', error)
