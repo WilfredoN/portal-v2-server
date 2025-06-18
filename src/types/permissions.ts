@@ -34,8 +34,3 @@ export type RolePermissions = {
     }
   }
 }
-
-export type UserPermissionsResponse = {
-  core: Array<{ resource: Resource; permission: Permissions }>
-  override: Array<{ resource: Resource; permission: Permissions }>
-}

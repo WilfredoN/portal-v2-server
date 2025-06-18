@@ -25,3 +25,7 @@ export const userSchema = z.object({
   status: userStatusSchema.default('new'),
   role: userRoleSchema.nullable()
 })
+
+export type UserDTO = z.infer<typeof userSchema>
+export type UserStatusDTO = z.infer<typeof userStatusSchema>
+export type UserRoleDTO = z.infer<typeof userRoleSchema>

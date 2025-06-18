@@ -21,3 +21,6 @@ export const AuthSchema = z.object({
   provider: z.string(),
   password: z.string().optional()
 })
+
+export type SignUpDTO = z.infer<typeof signUpSchema>
+export type LoginDTO = z.infer<typeof loginSchema>

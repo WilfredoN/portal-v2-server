@@ -1,23 +1,62 @@
 import { validateSchema } from '@src/lib/errors/withZodValidation'
-import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
-import { loginSchema, signUpSchema } from './auth.schema'
-import { authenticate, create, isExist } from './auth.utils'
+import {
+  loginSchema,
+  signUpSchema,
+  type LoginDTO,
+  type SignUpDTO
+} from './auth.schema'
+import {
+  createUserWithAuth,
+  authenticateUser,
+  isUserExist
+} from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
+import { encode } from '@src/lib/hash'
 
 export const authService = {
   async signUp(user: SignUpDTO) {
     const body = validateSchema(signUpSchema, user)
 
-    if (await isExist(body.email)) {
+    if (await isUserExist(body.email)) {
       throw appError('auth/user-exists', 'User already exists', 409)
     }
 
-    return await create(body)
+    const password = await encode.hash(body.password)
+    const data = { ...body, password }
+
+    const result = await createUserWithAuth(data)
+    if (!result) {
+      throw appError('db/not-found', 'Failed to create user', 500)
+    }
+
+    return result
   },
 
   async login(user: LoginDTO) {
     const body = validateSchema(loginSchema, user)
-    return await authenticate(body)
+    const { dbResponse, authResponse } = await authenticateUser(body)
+
+    if (!dbResponse) {
+      throw appError('auth/user-not-found', 'User not found', 404)
+    }
+
+    if (!authResponse || !authResponse.password) {
+      throw appError('auth/invalid-credentials', 'Invalid credentials', 401)
+    }
+
+    const verified = await encode.verify(body.password, authResponse.password)
+    if (!verified) {
+      throw appError('auth/invalid-credentials', 'Invalid credentials', 401)
+    }
+
+    return {
+      id: dbResponse.id,
+      email: dbResponse.email,
+      firstName: dbResponse.firstName,
+      lastName: dbResponse.lastName,
+      status: dbResponse.status,
+      role: dbResponse.role
+    }
   },
 
   async logout() {

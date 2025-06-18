@@ -1,8 +1,12 @@
 import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
+import type { SignUpDTO } from '@src/routes/auth/auth.schema'
+import type { UserStatusDTO } from '@src/routes/user/user.schema'
+import type { LoginDTO } from '@src/routes/auth/auth.schema'
 import { eq } from 'drizzle-orm'
-import type { SignUpDTO } from '@src/routes/auth/auth.types'
-import type { UserStatusDTO } from '@src/routes/user/user.types'
+import { appError } from '@src/lib/errors/app-error'
+
+const EMAIL_PROVIDER = 'local'
 
 export const insertUser = async (user: SignUpDTO) => {
   return await db
@@ -39,10 +43,52 @@ export const getAllUsers = async () => {
 }
 
 export const deleteAllUsers = async () => {
-  return await db.transaction(async (trx) => {
+  return await db.transaction(async transaction => {
     // eslint-disable-next-line drizzle/enforce-delete-with-where
-    await trx.delete(auth)
+    await transaction.delete(auth)
     // eslint-disable-next-line drizzle/enforce-delete-with-where
-    return await trx.delete(users).returning()
+    return await transaction.delete(users).returning()
   })
+}
+
+export const createUserWithAuth = async (user: SignUpDTO) => {
+  return await db.transaction(async transaction => {
+    const [response] = await insertUser(user)
+
+    if (!response) {
+      throw appError('db/not-found', 'Failed to create user', 500)
+    }
+
+    await transaction.insert(auth).values({
+      userId: response.id,
+      identifier: user.email,
+      provider: EMAIL_PROVIDER,
+      createdAt: new Date(),
+      password: user.password
+    })
+
+    return response
+  })
+}
+
+export const getAuthByEmail = async (email: string) => {
+  const [response] = await db
+    .select()
+    .from(auth)
+    .where(eq(auth.identifier, email))
+
+  return response
+}
+
+export const authenticateUser = async (user: LoginDTO) => {
+  const [dbResponse] = await selectUserByEmail(user.email)
+  const authResponse = await getAuthByEmail(user.email)
+
+  return { dbResponse, authResponse }
+}
+
+export const isUserExist = async (email: string) => {
+  const response = await selectUserByEmail(email)
+
+  return response.length > 0
 }
