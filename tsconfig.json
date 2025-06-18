@@ -9,7 +9,8 @@
     "allowJs": true,
 
     "paths": {
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "@shared/*": ["./src/lib/shared/*"]
     },
 
     // Bundler mode

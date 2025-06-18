@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev": "bun run --watch src/index.ts",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
   },
@@ -24,6 +25,7 @@
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.7.11",
-    "pg": "^8.16.0"
+    "pg": "^8.16.0",
+    "zod": "^3.25.67"
   }
 }

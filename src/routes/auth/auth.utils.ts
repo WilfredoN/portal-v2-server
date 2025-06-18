@@ -1,11 +1,10 @@
 import { db } from '@src/db'
 import { auth } from '@src/db/schema'
 import { encode } from '@src/lib/hash'
-import type { LoginDTO, SignUpDTO } from '@src/types/user'
+import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
 import { eq } from 'drizzle-orm'
 import { insertUser, selectUserByEmail } from '@src/db/users'
-
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import { appError } from '@src/lib/errors/app-error'
 
 // TODO: extract (env - ?)
 const EMAIL_PROVIDER = 'local'
@@ -21,7 +20,7 @@ export const create = async (user: SignUpDTO) => {
         '[createUser] Failed to create user in users table:',
         user.email
       )
-      throw new Error('Failed to create user')
+      throw appError('db/not-found', 'Failed to create user', 500)
     }
 
     console.log('[createUser] Inserting user into auth table:', user.email)
@@ -44,7 +43,7 @@ export const authenticate = async (user: LoginDTO) => {
   console.log('[authenticate] User found:', dbResponse)
 
   if (!dbResponse) {
-    throw new Error('User not found')
+    throw appError('auth/user-not-found', 'User not found', 404)
   }
 
   const [authResponse] = await db
@@ -55,7 +54,7 @@ export const authenticate = async (user: LoginDTO) => {
   console.log('[authenticate] Auth record found:', authResponse)
 
   if (!authResponse || !authResponse.password) {
-    throw new Error('Invalid email')
+    throw appError('auth/invalid-credentials', 'Invalid email', 401)
   }
 
   const verified = await encode.verify(user.password, authResponse.password)
@@ -63,7 +62,7 @@ export const authenticate = async (user: LoginDTO) => {
   console.log('[authenticate] Password verification result:', verified)
 
   if (!verified) {
-    throw new Error('Invalid password')
+    throw appError('auth/invalid-credentials', 'Invalid password', 401)
   }
 
   return {
@@ -74,22 +73,6 @@ export const authenticate = async (user: LoginDTO) => {
     status: dbResponse.status,
     role: dbResponse.role
   }
-}
-
-export const validate = (user: SignUpDTO) => {
-  if (!user.email || !user.password || !user.firstName || !user.lastName) {
-    return { error: 'Missing required fields' }
-  }
-
-  if (user.password.length < 8) {
-    return { error: 'Password must be at least 8 characters long' }
-  }
-
-  if (!emailRegex.test(user.email)) {
-    return { error: 'Invalid email format' }
-  }
-
-  return null
 }
 
 export const isExist = async (email: string) => {

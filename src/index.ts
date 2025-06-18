@@ -1,11 +1,25 @@
 import 'dotenv/config'
 import { Hono } from 'hono'
 import { authRoute } from './routes/auth/auth.route'
-import { usersRoute } from './routes/users/users.route'
+import { usersRoute } from './routes/user/user.route'
 import { testRoute } from './routes/test/test.route'
+import { cors } from 'hono/cors'
+import { errorHandler } from './lib/errors/error-handler'
 
-const app = new Hono()
+const app = new Hono({ strict: false })
+
+app.use('*', errorHandler())
+
 // TODO: Make routes as Map
+app.use(
+  '*',
+  cors({
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  })
+)
 
 app.all('/', response => response.text('Hello, 42'))
 
