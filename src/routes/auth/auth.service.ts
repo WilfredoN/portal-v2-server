@@ -1,24 +1,23 @@
-import type { LoginDTO, SignUpDTO } from '@src/types/user'
-import { authenticate, create, isExist, validate } from './auth.utils'
+import { validateSchema } from '@src/lib/errors/withZodValidation'
+import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
+import { loginSchema, signUpSchema } from './auth.schema'
+import { authenticate, create, isExist } from './auth.utils'
 import { appError } from '@src/lib/errors/app-error'
 
 export const authService = {
   async signUp(user: SignUpDTO) {
-    const validation = validate(user)
+    const body = validateSchema(signUpSchema, user)
 
-    if (validation) {
-      throw appError('validation/failed', validation.error, 400)
-    }
-
-    if (await isExist(user.email)) {
+    if (await isExist(body.email)) {
       throw appError('auth/user-exists', 'User already exists', 409)
     }
 
-    return await create(user)
+    return await create(body)
   },
 
   async login(user: LoginDTO) {
-    return await authenticate(user)
+    const body = validateSchema(loginSchema, user)
+    return await authenticate(body)
   },
 
   async logout() {

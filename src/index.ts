@@ -1,12 +1,12 @@
 import 'dotenv/config'
 import { Hono } from 'hono'
 import { authRoute } from './routes/auth/auth.route'
-import { usersRoute } from './routes/users/users.route'
+import { usersRoute } from './routes/user/user.route'
 import { testRoute } from './routes/test/test.route'
 import { cors } from 'hono/cors'
 import { errorHandler } from './lib/errors/error-handler'
 
-const app = new Hono()
+const app = new Hono({ strict: false })
 
 app.use('*', errorHandler())
 
