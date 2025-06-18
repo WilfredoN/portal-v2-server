@@ -1,12 +1,12 @@
-import { z } from 'zod'
 import { email, firstName, lastName } from '@shared/schema'
+import { z } from 'zod'
 
 export const userStatusSchema = z.enum([
   'new',
   'verified',
   'active',
   'suspended',
-  'deleted'
+  'deleted',
 ])
 
 export const userRoleSchema = z.enum([
@@ -14,16 +14,16 @@ export const userRoleSchema = z.enum([
   'admin',
   'enterprise_customer',
   'selfserve_customer',
-  'sdk_partner'
+  'sdk_partner',
 ])
 
 export const userSchema = z.object({
   id: z.string().uuid({ message: 'Invalid UUID format.' }),
-  email: email,
-  firstName: firstName,
-  lastName: lastName,
+  email,
+  firstName,
+  lastName,
   status: userStatusSchema.default('new'),
-  role: userRoleSchema.nullable()
+  role: userRoleSchema.nullable(),
 })
 
 export type UserDTO = z.infer<typeof userSchema>

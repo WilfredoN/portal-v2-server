@@ -1,7 +1,8 @@
-import { type Context, type Next } from 'hono'
+import type { Context, Next } from 'hono'
+
 import { appError } from '@src/lib/errors/app-error'
-import { verify } from 'hono/jwt'
 import { extractToken } from '@src/lib/shared/jwt'
+import { verify } from 'hono/jwt'
 
 export const authMiddleware = () => {
   return async (context: Context, next: Next) => {

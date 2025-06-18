@@ -1,10 +1,11 @@
+import type { SignUpDTO } from '@src/routes/auth/auth.schema'
+import type { LoginDTO } from '@src/routes/auth/auth.schema'
+import type { UserStatusDTO } from '@src/routes/user/user.schema'
+
 import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
-import type { SignUpDTO } from '@src/routes/auth/auth.schema'
-import type { UserStatusDTO } from '@src/routes/user/user.schema'
-import type { LoginDTO } from '@src/routes/auth/auth.schema'
-import { eq } from 'drizzle-orm'
 import { appError } from '@src/lib/errors/app-error'
+import { eq } from 'drizzle-orm'
 
 const EMAIL_PROVIDER = 'local'
 
@@ -14,7 +15,7 @@ export const insertUser = async (user: SignUpDTO) => {
     .values({
       email: user.email,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
     })
     .returning()
 }
@@ -29,7 +30,7 @@ export const selectUserById = async (id: string) => {
 
 export const updateUserStatusByEmail = async (
   email: string,
-  status: UserStatusDTO
+  status: UserStatusDTO,
 ) => {
   return await db
     .update(users)
@@ -43,16 +44,14 @@ export const getAllUsers = async () => {
 }
 
 export const deleteAllUsers = async () => {
-  return await db.transaction(async transaction => {
-    // eslint-disable-next-line drizzle/enforce-delete-with-where
+  return await db.transaction(async (transaction) => {
     await transaction.delete(auth)
-    // eslint-disable-next-line drizzle/enforce-delete-with-where
     return await transaction.delete(users).returning()
   })
 }
 
 export const createUserWithAuth = async (user: SignUpDTO) => {
-  return await db.transaction(async transaction => {
+  return await db.transaction(async (transaction) => {
     const [response] = await insertUser(user)
 
     if (!response) {
@@ -64,7 +63,7 @@ export const createUserWithAuth = async (user: SignUpDTO) => {
       identifier: user.email,
       provider: EMAIL_PROVIDER,
       createdAt: new Date(),
-      password: user.password
+      password: user.password,
     })
 
     return response

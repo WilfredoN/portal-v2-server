@@ -1,5 +1,6 @@
-import { getUsers } from './user.service'
 import type { Context } from 'hono'
+
+import { getUsers } from './user.service'
 
 export const usersController = {
   async getAll(context: Context): Promise<Response> {
@@ -11,5 +12,5 @@ export const usersController = {
       console.error('Error fetching users:', error)
       throw error
     }
-  }
+  },
 }

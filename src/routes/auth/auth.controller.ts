@@ -1,6 +1,8 @@
 import type { Context } from 'hono'
-import { authService } from './auth.service'
+
 import { generateToken } from '@src/lib/jwt'
+
+import { authService } from './auth.service'
 
 export const authController = {
   async login(content: Context): Promise<Response> {
@@ -11,12 +13,12 @@ export const authController = {
     const token = await generateToken({
       id: result.id,
       email: result.email,
-      role: result.role
+      role: result.role,
     })
 
     content.header(
       'Set-Cookie',
-      `token=${token}; HttpOnly; Path=/; SameSite=Strict`
+      `token=${token}; HttpOnly; Path=/; SameSite=Strict`,
     )
     return content.json({ ...result, token })
   },
@@ -32,5 +34,5 @@ export const authController = {
   async logout(content: Context) {
     content.header('Set-Cookie', 'token=; HttpOnly; Path=/; Max-Age=0')
     return content.json({ message: 'Logged out' })
-  }
+  },
 }

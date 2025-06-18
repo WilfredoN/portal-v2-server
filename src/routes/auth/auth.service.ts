@@ -1,17 +1,18 @@
-import { validateSchema } from '@src/lib/errors/withZodValidation'
 import {
-  loginSchema,
-  signUpSchema,
-  type LoginDTO,
-  type SignUpDTO
-} from './auth.schema'
-import {
-  createUserWithAuth,
   authenticateUser,
-  isUserExist
+  createUserWithAuth,
+  isUserExist,
 } from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
+import { validateSchema } from '@src/lib/errors/with-zod-validation'
 import { encode } from '@src/lib/hash'
+
+import {
+  type LoginDTO,
+  loginSchema,
+  type SignUpDTO,
+  signUpSchema,
+} from './auth.schema'
 
 export const authService = {
   async signUp(user: SignUpDTO) {
@@ -55,7 +56,7 @@ export const authService = {
       firstName: dbResponse.firstName,
       lastName: dbResponse.lastName,
       status: dbResponse.status,
-      role: dbResponse.role
+      role: dbResponse.role,
     }
   },
 
@@ -68,7 +69,7 @@ export const authService = {
     throw appError(
       'internal/server-error',
       'Forgot password not implemented',
-      501
+      501,
     )
   },
 
@@ -77,7 +78,7 @@ export const authService = {
     throw appError(
       'internal/server-error',
       'Reset password not implemented',
-      501
+      501,
     )
-  }
+  },
 }

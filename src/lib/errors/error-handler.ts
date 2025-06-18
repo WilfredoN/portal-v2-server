@@ -1,6 +1,7 @@
 import type { Context, Next } from 'hono'
-import type { AppError } from './app-error'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
+
+import type { AppError } from './app-error'
 
 export const errorHandler = () => {
   return async (context: Context, next: Next) => {
@@ -14,9 +15,9 @@ export const errorHandler = () => {
           {
             code: appError.code,
             message: appError.message,
-            details: appError.details ?? undefined
+            details: appError.details ?? undefined,
           },
-          appError.status as ContentfulStatusCode
+          appError.status as ContentfulStatusCode,
         )
       }
 
@@ -25,9 +26,9 @@ export const errorHandler = () => {
       return context.json(
         {
           code: 'internal/server-error',
-          message: 'Internal Server Error'
+          message: 'Internal Server Error',
         },
-        500
+        500,
       )
     }
   }

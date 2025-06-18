@@ -1,4 +1,4 @@
-import { type Context } from 'hono'
+import type { Context } from 'hono'
 
 export const extractToken = (context: Context): string | undefined => {
   const header = context.req.header('Authorization')

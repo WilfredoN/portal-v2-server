@@ -12,8 +12,8 @@ export const generateToken = async (payload: {
       sub: payload.id,
       email: payload.email,
       role: payload.role,
-      exp: Math.floor(Date.now() / 1000) + JWT_EXPIRE_TIME
+      exp: Math.floor(Date.now() / 1000) + JWT_EXPIRE_TIME,
     },
-    process.env.JWT_SECRET!
+    process.env.JWT_SECRET!,
   )
 }
