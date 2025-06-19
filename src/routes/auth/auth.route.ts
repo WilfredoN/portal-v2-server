@@ -11,7 +11,11 @@ authRoute.get('/', (context) => {
 })
 
 authRoute.post('/login', zValidator('json', loginSchema), authController.login)
-authRoute.post('/sign-up', zValidator('json', signUpSchema), authController.signUp)
+authRoute.post(
+  '/sign-up',
+  zValidator('json', signUpSchema),
+  authController.signUp
+)
 authRoute.post('/logout', authController.logout)
 authRoute.post('/forgot-password', (context) => {
   return context.json({ message: 'Forgot password endpoint' })
