@@ -2,15 +2,18 @@ import type { Context } from 'hono'
 
 import { logger } from '@src/lib/logger'
 import { success } from '@src/lib/shared/response'
+import { setCookie } from 'hono/cookie'
 import { StatusCodes } from 'http-status-codes/build/cjs/status-codes'
 
 import { authService } from './auth.service'
 
-const setCookie = (context: Context, token: string) => {
-  context.header(
-    'Set-Cookie',
-    `token=${token}; HttpOnly; Path=/; SameSite=Strict`
-  )
+const setToken = (context: Context, token: string) => {
+  setCookie(context, 'token', token, {
+    httpOnly: true,
+    path: '/',
+    sameSite: 'Strict'
+    // secure:true prod only(?)
+  })
 }
 
 export const authController = {
@@ -21,7 +24,7 @@ export const authController = {
     try {
       const result = await authService.login(body)
 
-      setCookie(context, result.token)
+      setToken(context, result.token)
       logger.info('Login successful', {
         userId: result.id,
         email: result.email
@@ -41,7 +44,7 @@ export const authController = {
     try {
       const result = await authService.signUp(body)
 
-      setCookie(context, result.token)
+      setToken(context, result.token)
       logger.info('Sign-up successful', {
         userId: result.id,
         email: result.email
