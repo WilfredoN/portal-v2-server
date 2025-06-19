@@ -10,7 +10,7 @@ export const authMiddleware = () => {
     const token = extractToken(context)
 
     if (!token) {
-      throw appError('auth/unauthorized', 'Unauthorized', 401)
+      throw appError('auth/unauthorized', 401)
     }
     try {
       const payload = await verify(token, process.env.JWT_SECRET!)
@@ -18,7 +18,7 @@ export const authMiddleware = () => {
       await next()
     } catch (error) {
       logger.error('JWT verification failed:', error)
-      throw appError('auth/unauthorized', 'Unauthorized', 401)
+      throw appError('auth/unauthorized', 401)
     }
   }
 }

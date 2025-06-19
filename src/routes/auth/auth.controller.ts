@@ -2,6 +2,7 @@ import type { Context } from 'hono'
 
 import { logger } from '@src/lib/logger'
 import { success } from '@src/lib/shared/response'
+import { StatusCodes } from 'http-status-codes/build/cjs/status-codes'
 
 import { authService } from './auth.service'
 
@@ -26,7 +27,7 @@ export const authController = {
         email: result.email
       })
 
-      return context.json(success(result, 200))
+      return context.json(success(result, StatusCodes.CREATED))
     } catch (error) {
       logger.error('Login failed', { email: body.email, error })
       throw error
@@ -46,7 +47,7 @@ export const authController = {
         email: result.email
       })
 
-      return context.json(success(result, 201))
+      return context.json(success(result, StatusCodes.CREATED))
     } catch (error) {
       logger.error('Sign-up failed', { email: body.email, error })
       throw error
@@ -57,6 +58,6 @@ export const authController = {
     logger.info('Logout attempt')
     context.header('Set-Cookie', 'token=; HttpOnly; Path=/; Max-Age=0')
     logger.info('Logout successful')
-    return context.json(success({ message: 'Logged out' }, 200))
+    return context.json(success({ message: 'Logged out' }, StatusCodes.OK))
   }
 }
