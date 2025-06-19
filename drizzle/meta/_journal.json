@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1750344115839,
+      "tag": "20250619144155_remarkable_rhino",
+      "breakpoints": true
+    }
+  ]
+}

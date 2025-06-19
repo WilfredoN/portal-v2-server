@@ -1,4 +1,3 @@
-import type { UserDTO } from '@src/routes/user/user.schema'
 import type { Permissions, Resource } from '@src/types/permissions'
 import type { Context, Next } from 'hono'
 
@@ -12,7 +11,12 @@ export const requirePermission = (
   permission: Permissions
 ) => {
   return async (context: Context, next: Next) => {
-    const user: UserDTO = context.get('user')
+    const payload = context.get('jwtPayload')
+
+    const user = {
+      id: payload?.sub,
+      role: payload?.role
+    }
 
     if (!user?.id || !user?.role) {
       throw appError('auth/unauthorized', StatusCodes.UNAUTHORIZED)
