@@ -6,24 +6,23 @@ import {
 import { appError } from '@src/lib/errors/app-error'
 import { validateSchema } from '@src/lib/errors/with-zod-validation'
 import { encode } from '@src/lib/hash'
+import { StatusCodes } from 'http-status-codes'
 
 import {
   type LoginDTO,
   loginSchema,
   type SignUpDTO,
-  signUpSchema,
+  type UserResponseDTO,
 } from './auth.schema'
 
 export const authService = {
-  async signUp(user: SignUpDTO) {
-    const body = validateSchema(signUpSchema, user)
-
-    if (await isUserExist(body.email)) {
-      throw appError('auth/user-exists', 'User already exists', 409)
+  async signUp(user: SignUpDTO): Promise<UserResponseDTO> {
+    if (await isUserExist(user.email)) {
+      throw appError('auth/user-exists', 'User already exists', StatusCodes.CONFLICT)
     }
 
-    const password = await encode.hash(body.password)
-    const data = { ...body, password }
+    const password = await encode.hash(user.password)
+    const data = { ...user, password }
 
     const result = await createUserWithAuth(data)
     if (!result) {

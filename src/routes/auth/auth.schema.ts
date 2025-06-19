@@ -13,6 +13,16 @@ export const signUpSchema = z.object({
   lastName,
 })
 
+export const userResponseSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  status: z.string(),
+  role: z.string().nullable(),
+  token: z.string().optional(),
+})
+
 export const AuthSchema = z.object({
   id: z.string(),
   userId: z.string(),
@@ -24,3 +34,4 @@ export const AuthSchema = z.object({
 
 export type SignUpDTO = z.infer<typeof signUpSchema>
 export type LoginDTO = z.infer<typeof loginSchema>
+export type UserResponseDTO = z.infer<typeof userResponseSchema>
