@@ -1,5 +1,7 @@
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
+import { getReasonPhrase } from 'http-status-codes'
+
 export type AppErrorCode
   = | 'auth/invalid-credentials'
     | 'auth/user-not-found'
@@ -22,12 +24,11 @@ export interface AppError {
 
 export const appError = (
   code: AppErrorCode,
-  message?: string,
-  status: ContentfulStatusCode = 400,
+  status: ContentfulStatusCode,
   details?: unknown,
 ): AppError => ({
   code,
-  message,
+  message: getReasonPhrase(status),
   status,
   details,
   isApplicationError: true,

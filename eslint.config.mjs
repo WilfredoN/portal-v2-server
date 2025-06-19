@@ -3,6 +3,7 @@ import antfu from '@antfu/eslint-config'
 export default antfu({
     rules: {
         'antfu/no-top-level-await': 'off',
+        'style/comma-dangle': 'off',
         'curly': ['error', 'all'],
         "node/no-process-env": 'off',
         "node/prefer-global/process": 'off',

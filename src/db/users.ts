@@ -6,6 +6,7 @@ import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
 import { appError } from '@src/lib/errors/app-error'
 import { eq } from 'drizzle-orm'
+import { StatusCodes } from 'http-status-codes'
 
 const EMAIL_PROVIDER = 'local'
 
@@ -15,7 +16,7 @@ export const insertUser = async (user: SignUpDTO) => {
     .values({
       email: user.email,
       firstName: user.firstName,
-      lastName: user.lastName,
+      lastName: user.lastName
     })
     .returning()
 }
@@ -30,7 +31,7 @@ export const selectUserById = async (id: string) => {
 
 export const updateUserStatusByEmail = async (
   email: string,
-  status: UserStatusDTO,
+  status: UserStatusDTO
 ) => {
   return await db
     .update(users)
@@ -55,7 +56,7 @@ export const createUserWithAuth = async (user: SignUpDTO) => {
     const [response] = await insertUser(user)
 
     if (!response) {
-      throw appError('db/not-found', 'Failed to create user', 500)
+      throw appError('db/not-found', StatusCodes.INTERNAL_SERVER_ERROR)
     }
 
     await transaction.insert(auth).values({
@@ -63,7 +64,7 @@ export const createUserWithAuth = async (user: SignUpDTO) => {
       identifier: user.email,
       provider: EMAIL_PROVIDER,
       createdAt: new Date(),
-      password: user.password,
+      password: user.password
     })
 
     return response

@@ -20,7 +20,7 @@ export const userResponseSchema = z.object({
   lastName: z.string(),
   status: z.string(),
   role: z.string().nullable(),
-  token: z.string().optional(),
+  token: z.string(),
 })
 
 export const AuthSchema = z.object({
