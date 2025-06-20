@@ -10,17 +10,6 @@ import { StatusCodes } from 'http-status-codes'
 
 const EMAIL_PROVIDER = 'local'
 
-export const insertUser = async (user: SignUpDTO) => {
-  return await db
-    .insert(users)
-    .values({
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName
-    })
-    .returning()
-}
-
 export const selectUserByEmail = async (email: string) => {
   return await db.select().from(users).where(eq(users.email, email))
 }
@@ -53,7 +42,14 @@ export const deleteAllUsers = async () => {
 
 export const createUserWithAuth = async (user: SignUpDTO) => {
   return await db.transaction(async (transaction) => {
-    const [response] = await insertUser(user)
+    const [response] = await transaction
+      .insert(users)
+      .values({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      })
+      .returning()
 
     if (!response) {
       throw appError('db/not-found', StatusCodes.INTERNAL_SERVER_ERROR)
