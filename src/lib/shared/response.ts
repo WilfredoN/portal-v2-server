@@ -48,9 +48,11 @@ const extractPath = (input?: { req?: { path?: string } } | string): string | und
   if (!input) {
     return undefined
   }
+
   if (typeof input === 'string') {
     return input
   }
+
   return input.req?.path
 }
 

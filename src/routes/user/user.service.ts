@@ -15,5 +15,6 @@ export const getUsers = async (): Promise<Array<UserDTO>> => {
   }
 
   logger.info('Users fetched successfully', { count: request.length })
+
   return request
 }

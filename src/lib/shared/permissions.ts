@@ -13,6 +13,7 @@ export const hasRolePermission = (
   permission: Permissions,
 ): boolean => {
   const rolePermissions = ROLE_PERMISSIONS[role]
+
   return !!rolePermissions?.can[permission]?.includes(resource)
 }
 

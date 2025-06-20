@@ -49,6 +49,7 @@ export const authController = {
     logger.info('Logout attempt')
     context.header('Set-Cookie', 'token=; HttpOnly; Path=/; Max-Age=0')
     logger.info('Logout successful')
+
     return context.json(success({ message: 'Logged out' }, StatusCodes.OK))
   }
 }

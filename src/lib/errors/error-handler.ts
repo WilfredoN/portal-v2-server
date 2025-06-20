@@ -31,6 +31,7 @@ export const errorHandler = () => {
 
       logger.error('Unhandled error:', err)
       const code: ContentfulStatusCode = 500
+
       return context.json(
         error(
           code,

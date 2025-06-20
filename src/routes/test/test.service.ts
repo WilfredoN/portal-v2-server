@@ -7,8 +7,10 @@ import { appError } from '@src/lib/errors/app-error'
 import { logger } from '@src/lib/logger'
 import { StatusCodes } from 'http-status-codes'
 
+import type { UserRoleDTO } from '../user/user.schema'
+
 import {
-  type UserRoleDTO,
+
   userRoleSchema,
   userStatusSchema
 } from '../user/user.schema'
@@ -24,10 +26,12 @@ export const testService = {
       })
     }
     const response = await updateUserStatusByEmail(email, status as any)
+
     if (response.length === 0) {
       logger.warn('Change status failed: user not found', { email })
       throw appError('db/not-found', StatusCodes.NOT_FOUND)
     }
+
     return response[0]
   },
 
@@ -41,15 +45,18 @@ export const testService = {
       })
     }
     const response = await updateUserRoleByEmail(email, role)
+
     if (response.length === 0) {
       logger.warn('Change role failed: user not found', { email })
       throw appError('db/not-found', StatusCodes.NOT_FOUND)
     }
+
     return response[0]
   },
 
   async clearUsers() {
     logger.debug('Service: clearUsers')
+
     return await deleteAllUsers()
   }
 }
