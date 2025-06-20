@@ -1,44 +1,69 @@
-import { validateSchema } from '@src/lib/errors/withZodValidation'
-import type { LoginDTO, SignUpDTO } from '../auth/auth.types'
-import { loginSchema, signUpSchema } from './auth.schema'
-import { authenticate, create, isExist } from './auth.utils'
+import {
+  authenticateUser,
+  createUserWithAuth,
+  isUserExist
+} from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
+import { encode } from '@src/lib/hash'
+import { generateToken } from '@src/lib/jwt'
+import { StatusCodes } from 'http-status-codes'
+
+import type { LoginDTO, SignUpDTO, UserResponseDTO } from './auth.schema'
 
 export const authService = {
-  async signUp(user: SignUpDTO) {
-    const body = validateSchema(signUpSchema, user)
-
-    if (await isExist(body.email)) {
-      throw appError('auth/user-exists', 'User already exists', 409)
+  async signUp(user: SignUpDTO): Promise<UserResponseDTO> {
+    if (await isUserExist(user.email)) {
+      throw appError('auth/user-exists', StatusCodes.CONFLICT)
     }
 
-    return await create(body)
+    const password = await encode.hash(user.password)
+    const data = { ...user, password }
+
+    const result = await createUserWithAuth(data)
+    if (!result) {
+      throw appError('db/not-found', StatusCodes.INTERNAL_SERVER_ERROR)
+    }
+
+    const token = await generateToken({
+      id: result.id,
+      email: result.email,
+      role: result.role
+    })
+    return { ...result, token }
   },
 
-  async login(user: LoginDTO) {
-    const body = validateSchema(loginSchema, user)
-    return await authenticate(body)
-  },
+  async login(user: LoginDTO): Promise<UserResponseDTO> {
+    const { dbResponse, authResponse } = await authenticateUser(user)
 
-  async logout() {
-    throw appError('internal/server-error', 'Logout not implemented', 501)
-  },
+    if (!dbResponse || !authResponse) {
+      throw appError('auth/user-not-found', StatusCodes.NOT_FOUND)
+    }
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  async forgotPassword(email: string) {
-    throw appError(
-      'internal/server-error',
-      'Forgot password not implemented',
-      501
+    const isPasswordValid = await encode.verify(
+      user.password,
+      authResponse.password!
     )
+    if (!isPasswordValid) {
+      throw appError('auth/invalid-password', StatusCodes.UNAUTHORIZED)
+    }
+
+    const token = await generateToken({
+      id: dbResponse.id,
+      email: dbResponse.email,
+      role: dbResponse.role
+    })
+    return { ...dbResponse, token }
   },
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  async resetPassword(token: string, newPassword: string) {
-    throw appError(
-      'internal/server-error',
-      'Reset password not implemented',
-      501
-    )
+  async logout(): Promise<void> {
+    throw appError('internal/server-error', StatusCodes.NOT_IMPLEMENTED)
+  },
+
+  async forgotPassword(): Promise<void> {
+    throw appError('internal/server-error', StatusCodes.NOT_IMPLEMENTED)
+  },
+
+  async resetPassword(): Promise<void> {
+    throw appError('internal/server-error', StatusCodes.NOT_IMPLEMENTED)
   }
 }

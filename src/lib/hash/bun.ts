@@ -7,5 +7,5 @@ export const hash: Hash = {
 
   async verify(password: string, hash: string): Promise<boolean> {
     return await Bun.password.verify(password, hash)
-  }
+  },
 }

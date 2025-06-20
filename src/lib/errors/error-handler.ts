@@ -1,33 +1,46 @@
 import type { Context, Next } from 'hono'
-import type { AppError } from './app-error'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
+
+import type { AppError } from './app-error'
+
+import { logger } from '../logger'
+import { error } from '../shared/response'
 
 export const errorHandler = () => {
   return async (context: Context, next: Next) => {
     try {
       await next()
-    } catch (error) {
-      if (error && typeof error === 'object' && 'isApplicationError' in error) {
-        const appError = error as AppError
+    } catch (err) {
+      if (err && typeof err === 'object' && 'isApplicationError' in err) {
+        const appError = err as AppError
+        const status = (appError.status as ContentfulStatusCode) || 500
+        const code = status
 
         return context.json(
-          {
-            code: appError.code,
-            message: appError.message,
-            details: appError.details ?? undefined
-          },
-          appError.status as ContentfulStatusCode
+          error(
+            code,
+            appError.message || 'Application Error',
+            appError.details ?? undefined,
+            appError.code,
+            undefined,
+            { req: { path: context.req.path } },
+          ),
+          status,
         )
       }
 
-      console.error('Unhandled error:', error)
-
+      logger.error('Unhandled error:', err)
+      const code: ContentfulStatusCode = 500
       return context.json(
-        {
-          code: 'internal/server-error',
-          message: 'Internal Server Error'
-        },
-        500
+        error(
+          code,
+          'Internal Server Error',
+          undefined,
+          undefined,
+          undefined,
+          { req: { path: context.req.path } },
+        ),
+        code,
       )
     }
   }

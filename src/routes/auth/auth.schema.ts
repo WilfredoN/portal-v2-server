@@ -1,16 +1,26 @@
+import { email, firstName, lastName, password } from '@shared/schema'
 import { z } from 'zod'
-import { email, password, firstName, lastName } from '@shared/schema'
 
 export const loginSchema = z.object({
   email,
-  password
+  password,
 })
 
 export const signUpSchema = z.object({
   email,
   password,
   firstName,
-  lastName
+  lastName,
+})
+
+export const userResponseSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  status: z.string(),
+  role: z.string().nullable(),
+  token: z.string(),
 })
 
 export const AuthSchema = z.object({
@@ -19,5 +29,9 @@ export const AuthSchema = z.object({
   identifier: z.string(),
   createdAt: z.date(),
   provider: z.string(),
-  password: z.string().optional()
+  password: z.string().optional(),
 })
+
+export type SignUpDTO = z.infer<typeof signUpSchema>
+export type LoginDTO = z.infer<typeof loginSchema>
+export type UserResponseDTO = z.infer<typeof userResponseSchema>

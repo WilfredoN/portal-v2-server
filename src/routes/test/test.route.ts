@@ -1,10 +1,13 @@
 import { deleteAllUsers, updateUserStatusByEmail } from '@src/db/users'
 import { appError } from '@src/lib/errors/app-error'
+import { logger } from '@src/lib/logger'
 import { Hono } from 'hono'
+import { StatusCodes } from 'http-status-codes'
 
 export const testRoute = new Hono()
 
-testRoute.get('/', async content => {
+testRoute.get('/', async (content) => {
+  logger.info('API: GET /test called')
   const response = {
     message: 'Test route is working!',
     routes: [
@@ -15,32 +18,46 @@ testRoute.get('/', async content => {
   return content.json(response)
 })
 
-testRoute.post('/change-status', async content => {
+testRoute.post('/change-status', async (content) => {
   const { email, status } = await content.req.json()
+
+  logger.info('API: POST /test/change-status', { email, status })
+
   if (!email || !status) {
-    throw appError('validation/failed', 'Email and status are required', 400)
+    logger.warn('Change status failed: missing email or status')
+
+    throw appError('validation/failed', StatusCodes.BAD_REQUEST)
   }
+
   const response = await updateUserStatusByEmail(email, status)
   if (response.length === 0) {
+    logger.warn('Change status failed: user not found', { email })
+
     throw new Error('User not found')
   }
+
+  logger.info('User status updated', { email, status })
+
   return content.json(
     { message: 'User verified successfully', user: response[0] },
-    200
+    StatusCodes.OK
   )
 })
 
-testRoute.post('/clear-users', async context => {
+testRoute.post('/clear-users', async (context) => {
+  logger.info('API: POST /test/clear-users called')
   try {
     const deletedUsers = await deleteAllUsers()
 
+    logger.info('Users deleted', { count: deletedUsers.length })
+
     return context.json(
       { message: `${deletedUsers.length} users deleted successfully` },
-      200
+      StatusCodes.OK
     )
   } catch (error) {
-    console.error('Error deleting users:', error)
+    logger.error('Error deleting users:', error)
 
-    throw appError('internal/server-error', 'Failed to delete users', 500)
+    throw appError('internal/server-error', StatusCodes.INTERNAL_SERVER_ERROR)
   }
 })

@@ -1,16 +1,20 @@
-export type AppErrorCode =
-  | 'auth/invalid-credentials'
-  | 'auth/user-not-found'
-  | 'auth/user-exists'
-  | 'auth/unauthorized'
-  | 'auth/forbidden'
-  | 'db/connection-failed'
-  | 'db/not-found'
-  | 'validation/failed'
-  | 'internal/server-error'
-  | string
+import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
-export type AppError = {
+import { getReasonPhrase } from 'http-status-codes'
+
+export type AppErrorCode
+  = | 'auth/invalid-credentials'
+    | 'auth/user-not-found'
+    | 'auth/user-exists'
+    | 'auth/unauthorized'
+    | 'auth/forbidden'
+    | 'db/connection-failed'
+    | 'db/not-found'
+    | 'validation/failed'
+    | 'internal/server-error'
+    | string
+
+export interface AppError {
   code: AppErrorCode
   message?: string
   status: number
@@ -20,13 +24,12 @@ export type AppError = {
 
 export const appError = (
   code: AppErrorCode,
-  message?: string,
-  status: number = 400,
-  details?: unknown
+  status: ContentfulStatusCode,
+  details?: unknown,
 ): AppError => ({
   code,
-  message,
+  message: getReasonPhrase(status),
   status,
   details,
-  isApplicationError: true
+  isApplicationError: true,
 })
