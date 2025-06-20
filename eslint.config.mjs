@@ -5,6 +5,11 @@ export default antfu({
         'antfu/no-top-level-await': 'off',
         'style/comma-dangle': 'off',
         'curly': ['error', 'all'],
+        'style/padding-line-between-statements': [
+            'error',
+            { blankLine: 'always', prev: '*', next: 'return' },
+            { blankLine: 'always', prev: ['const', 'let', 'var', 'if', 'for', 'while', 'switch', 'block', 'block-like'], next: 'if' },
+        ],
         "node/no-process-env": 'off',
         "node/prefer-global/process": 'off',
         "no-console": ['warn', { allow: ['warn', 'error'] }],

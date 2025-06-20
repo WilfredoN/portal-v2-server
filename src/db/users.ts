@@ -1,6 +1,5 @@
-import type { SignUpDTO } from '@src/routes/auth/auth.schema'
-import type { LoginDTO } from '@src/routes/auth/auth.schema'
-import type { UserStatusDTO } from '@src/routes/user/user.schema'
+import type { LoginDTO, SignUpDTO } from '@src/routes/auth/auth.schema'
+import type { UserRoleDTO, UserStatusDTO } from '@src/routes/user/user.schema'
 
 import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
@@ -29,6 +28,17 @@ export const updateUserStatusByEmail = async (
     .returning()
 }
 
+export const updateUserRoleByEmail = async (
+  email: string,
+  role: UserRoleDTO
+) => {
+  return await db
+    .update(users)
+    .set({ role })
+    .where(eq(users.email, email))
+    .returning()
+}
+
 export const getAllUsers = async () => {
   return await db.select().from(users)
 }
@@ -36,6 +46,7 @@ export const getAllUsers = async () => {
 export const deleteAllUsers = async () => {
   return await db.transaction(async (transaction) => {
     await transaction.delete(auth)
+
     return await transaction.delete(users).returning()
   })
 }

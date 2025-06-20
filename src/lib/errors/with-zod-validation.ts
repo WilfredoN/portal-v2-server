@@ -1,5 +1,7 @@
+import type { ZodSchema } from 'zod'
+
 import { appError } from '@src/lib/errors/app-error'
-import { ZodError, type ZodSchema } from 'zod'
+import { ZodError } from 'zod'
 
 export const validateSchema = <T>(schema: ZodSchema<T>, data: unknown): T => {
   try {

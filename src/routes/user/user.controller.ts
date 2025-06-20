@@ -12,6 +12,7 @@ export const usersController = {
     try {
       const users = await getUsers()
       logger.info('API: GET /users success', { count: users.length })
+
       return context.json(success(users, StatusCodes.OK))
     } catch (error) {
       logger.error('Error fetching users:', error)

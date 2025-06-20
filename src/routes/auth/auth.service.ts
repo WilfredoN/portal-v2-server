@@ -20,6 +20,7 @@ export const authService = {
     const data = { ...user, password }
 
     const result = await createUserWithAuth(data)
+
     if (!result) {
       throw appError('db/not-found', StatusCodes.INTERNAL_SERVER_ERROR)
     }
@@ -29,6 +30,7 @@ export const authService = {
       email: result.email,
       role: result.role
     })
+
     return { ...result, token }
   },
 
@@ -43,6 +45,7 @@ export const authService = {
       user.password,
       authResponse.password!
     )
+
     if (!isPasswordValid) {
       throw appError('auth/invalid-password', StatusCodes.UNAUTHORIZED)
     }
@@ -52,6 +55,7 @@ export const authService = {
       email: dbResponse.email,
       role: dbResponse.role
     })
+
     return { ...dbResponse, token }
   },
 
