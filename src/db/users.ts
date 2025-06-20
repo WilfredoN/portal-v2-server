@@ -1,6 +1,6 @@
 import type { SignUpDTO } from '@src/routes/auth/auth.schema'
 import type { LoginDTO } from '@src/routes/auth/auth.schema'
-import type { UserStatusDTO } from '@src/routes/user/user.schema'
+import type { UserRoleDTO, UserStatusDTO } from '@src/routes/user/user.schema'
 
 import { db } from '@src/db'
 import { auth, users } from '@src/db/schema'
@@ -25,6 +25,17 @@ export const updateUserStatusByEmail = async (
   return await db
     .update(users)
     .set({ status })
+    .where(eq(users.email, email))
+    .returning()
+}
+
+export const updateUserRoleByEmail = async (
+  email: string,
+  role: UserRoleDTO
+) => {
+  return await db
+    .update(users)
+    .set({ role })
     .where(eq(users.email, email))
     .returning()
 }

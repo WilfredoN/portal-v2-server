@@ -13,6 +13,8 @@ export const requirePermission = (
   return async (context: Context, next: Next) => {
     const payload = context.get('jwtPayload')
 
+    logger.debug('Checking permissions for user:', payload)
+
     const user = {
       id: payload?.sub,
       role: payload?.role
