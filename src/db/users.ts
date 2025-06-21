@@ -99,3 +99,13 @@ export const isUserExist = async (email: string) => {
 
   return response.length > 0
 }
+
+export const isUserVerified = async (email: string) => {
+  const [user] = await selectUserByEmail(email)
+
+  if (!user) {
+    throw appError('auth/user-not-found', StatusCodes.NOT_FOUND)
+  }
+
+  return user.status === 'verified'
+}
