@@ -9,7 +9,7 @@ import { testService } from './test.service'
 export const testController = {
   async getTest(context: Context): Promise<Response> {
     logger.debug('API: GET /test called')
-    const routes = matchedRoutes(context).map((route) => ({
+    const routes = matchedRoutes(context).map(route => ({
       method: route.method,
       path: route.path
     }))
