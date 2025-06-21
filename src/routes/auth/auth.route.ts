@@ -17,6 +17,7 @@ authRoute.post(
   authController.signUp
 )
 authRoute.post('/logout', authController.logout)
+authRoute.post('/verify', authController.verifyEmail)
 authRoute.post('/forgot-password', (context) => {
   return context.json({ message: 'Forgot password endpoint' })
 })

@@ -1,11 +1,15 @@
 import {
   authenticateUser,
   createUserWithAuth,
-  isUserExist
+  isUserExist,
+  isUserVerified,
+  updateUserStatusByEmail
 } from '@src/db/users'
+import { getVerificationUrl, sendVerificationEmail } from '@src/lib/email'
 import { appError } from '@src/lib/errors/app-error'
 import { encode } from '@src/lib/hash'
 import { generateToken } from '@src/lib/jwt'
+import { verify } from 'hono/jwt'
 import { StatusCodes } from 'http-status-codes'
 
 import type { LoginDTO, SignUpDTO, UserResponseDTO } from './auth.schema'
@@ -29,6 +33,12 @@ export const authService = {
       id: result.id,
       email: result.email,
       role: result.role
+    })
+
+    const verificationUrl = getVerificationUrl(result.email, token)
+    await sendVerificationEmail({
+      to: result.email,
+      verificationUrl
     })
 
     return { ...result, token }
@@ -57,6 +67,26 @@ export const authService = {
     })
 
     return { ...dbResponse, token }
+  },
+  // TODO: zod for token & email?
+  async verifyEmail(email: string, token: string): Promise<void> {
+    const payload = await verify(token, process.env.JWT_SECRET!)
+
+    if (!payload || payload.email !== email) {
+      throw appError('auth/invalid-token', StatusCodes.UNAUTHORIZED)
+    }
+    const user = await isUserExist(email)
+
+    if (!user) {
+      throw appError('auth/user-not-found', StatusCodes.NOT_FOUND)
+    }
+    const verified = await isUserVerified(email)
+
+    if (verified) {
+      throw appError('auth/email-already-verified', StatusCodes.BAD_REQUEST)
+    }
+
+    await updateUserStatusByEmail(email, 'verified')
   },
 
   async logout(): Promise<void> {
