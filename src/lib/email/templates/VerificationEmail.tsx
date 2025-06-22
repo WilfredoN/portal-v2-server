@@ -17,6 +17,11 @@ export function VerificationEmail(props: VerificationEmailProps) {
           {verificationUrl}
         </a>
       </p>
+      <p>
+        If the link above doesn't work, copy and paste this URL into your
+        browser:
+      </p>
+      <p style={{ wordBreak: 'break-all' }}>{verificationUrl}</p>
       <p>If you did not request this, you can ignore this email.</p>
     </div>
   )

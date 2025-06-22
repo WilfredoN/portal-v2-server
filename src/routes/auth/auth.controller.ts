@@ -56,7 +56,10 @@ export const authController = {
       )
     }
 
-    logger.debug('Email verification attempt', { email, token })
+    logger.debug('Email verification attempt', {
+      email,
+      token: `${token.substring(0, 4)}...`
+    })
 
     try {
       await authService.verifyEmail(email, token)
