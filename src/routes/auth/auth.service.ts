@@ -9,6 +9,8 @@ import { getVerificationUrl, sendVerificationEmail } from '@src/lib/email'
 import { appError } from '@src/lib/errors/app-error'
 import { encode } from '@src/lib/hash'
 import { generateToken } from '@src/lib/jwt'
+import { logger } from '@src/lib/logger'
+import { UserStatus } from '@src/types/user-status'
 import { verify } from 'hono/jwt'
 import { StatusCodes } from 'http-status-codes'
 
@@ -36,10 +38,15 @@ export const authService = {
     })
 
     const verificationUrl = getVerificationUrl(result.email, token)
-    await sendVerificationEmail({
-      to: result.email,
-      verificationUrl
-    })
+    try {
+      await sendVerificationEmail({
+        to: result.email,
+        verificationUrl
+      })
+    } catch (error) {
+      logger.fatal('Error sending verification email:', error)
+      throw appError('email/send-failed', StatusCodes.INTERNAL_SERVER_ERROR)
+    }
 
     return { ...result, token }
   },
@@ -86,7 +93,7 @@ export const authService = {
       throw appError('auth/email-already-verified', StatusCodes.BAD_REQUEST)
     }
 
-    await updateUserStatusByEmail(email, 'verified')
+    await updateUserStatusByEmail(email, UserStatus.VERIFIED)
   },
 
   async logout(): Promise<void> {
