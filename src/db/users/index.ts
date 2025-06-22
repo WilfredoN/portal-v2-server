@@ -13,13 +13,13 @@ const EMAIL_PROVIDER = 'local'
 export const selectUserByEmail = async (
   email: string
 ): Promise<UserDTO | null> => {
-  const [user] = await db.select().from(users).where(eq(users.email, email))
+  const user = (await db.select().from(users).where(eq(users.email, email)))[0]
 
   return user ?? null
 }
 
 export const selectUserById = async (id: string): Promise<UserDTO | null> => {
-  const [user] = await db.select().from(users).where(eq(users.id, id))
+  const user = (await db.select().from(users).where(eq(users.id, id)))[0]
 
   return user ?? null
 }
