@@ -2,7 +2,7 @@ import {
   authenticateUser,
   createUserWithAuth,
   isUserExist,
-  isUserVerified,
+  selectUserByEmail,
   updateUserStatusByEmail
 } from '@src/db/users'
 import { getVerificationUrl, sendVerificationEmail } from '@src/lib/email'
@@ -82,14 +82,13 @@ export const authService = {
     if (!payload || payload.email !== email) {
       throw appError('auth/invalid-token', StatusCodes.UNAUTHORIZED)
     }
-    const user = await isUserExist(email)
+    const user = await selectUserByEmail(email)
 
     if (!user) {
       throw appError('auth/user-not-found', StatusCodes.NOT_FOUND)
     }
-    const verified = await isUserVerified(email)
 
-    if (verified) {
+    if (user.status === UserStatus.VERIFIED) {
       throw appError('auth/email-already-verified', StatusCodes.BAD_REQUEST)
     }
 
