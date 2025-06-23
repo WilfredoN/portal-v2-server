@@ -9,11 +9,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import type { UserRoleDTO } from '../user/user.schema'
 
-import {
-
-  userRoleSchema,
-  userStatusSchema
-} from '../user/user.schema'
+import { userRoleSchema, userStatusSchema } from '../user/user.schema'
 
 export const testService = {
   async changeUserStatus(email: string, status: string) {

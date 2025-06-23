@@ -1,3 +1,4 @@
+import type { AppContext } from '@src/types/context'
 import type { Permissions, Resource } from '@src/types/permissions'
 import type { Context, Next } from 'hono'
 
@@ -10,24 +11,19 @@ export const requirePermission = (
   resource: Resource,
   permission: Permissions
 ) => {
-  return async (context: Context, next: Next) => {
+  return async (context: Context<AppContext>, next: Next) => {
     const payload = context.get('jwtPayload')
 
-    logger.debug('Checking permissions for user:', payload)
+    logger.debug('Checking permissions for user:', { sub: payload.sub })
 
-    const user = {
-      id: payload?.sub,
-      role: payload?.role
-    }
-
-    if (!user?.id || !user?.role) {
+    if (!payload?.sub || !payload?.role) {
       throw appError('auth/unauthorized', StatusCodes.UNAUTHORIZED)
     }
 
     try {
       const hasAccess = await hasPermission(
-        user.id,
-        user.role,
+        payload.sub,
+        payload.role,
         resource,
         permission
       )

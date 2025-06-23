@@ -1,7 +1,7 @@
 import type { Context } from 'hono'
 
 import { logger } from '@src/lib/logger'
-import { success } from '@src/lib/shared/response'
+import { error, success } from '@src/lib/shared/response'
 import { StatusCodes } from 'http-status-codes/build/cjs/status-codes'
 
 import { authService } from './auth.service'
@@ -41,6 +41,34 @@ export const authController = {
       return context.json(success(result, StatusCodes.CREATED))
     } catch (error) {
       logger.error('Sign-up failed', { email: body.email, error })
+      throw error
+    }
+  },
+
+  async verifyEmail(context: Context): Promise<Response> {
+    const { email, token } = await context.req.json()
+
+    if (!email || !token) {
+      logger.fatal('Email verification failed: missing email or token')
+
+      return context.json(
+        error(StatusCodes.BAD_REQUEST, 'Email and token are required')
+      )
+    }
+
+    logger.debug('Email verification attempt', {
+      email,
+      token: `${token.substring(0, 4)}...`
+    })
+
+    try {
+      await authService.verifyEmail(email, token)
+
+      return context.json(
+        success({ message: 'Email verified successfully' }, StatusCodes.OK)
+      )
+    } catch (error) {
+      logger.error('Email verification failed', { email, token, error })
       throw error
     }
   },

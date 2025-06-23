@@ -1,11 +1,16 @@
 import {
   authenticateUser,
   createUserWithAuth,
-  isUserExist
+  isUserExist,
+  selectUserByEmail,
+  updateUserStatusByEmail
 } from '@src/db/users'
+import { getVerificationUrl, sendVerificationEmail } from '@src/lib/email'
 import { appError } from '@src/lib/errors/app-error'
 import { encode } from '@src/lib/hash'
-import { generateToken } from '@src/lib/jwt'
+import { generateToken, verifyToken } from '@src/lib/jwt'
+import { logger } from '@src/lib/logger'
+import { UserStatus } from '@src/types/user-status'
 import { StatusCodes } from 'http-status-codes'
 
 import type { LoginDTO, SignUpDTO, UserResponseDTO } from './auth.schema'
@@ -26,10 +31,21 @@ export const authService = {
     }
 
     const token = await generateToken({
-      id: result.id,
+      sub: result.id,
       email: result.email,
       role: result.role
     })
+
+    const verificationUrl = getVerificationUrl(result.email, token)
+    try {
+      await sendVerificationEmail({
+        to: result.email,
+        verificationUrl
+      })
+    } catch (error) {
+      logger.fatal('Error sending verification email:', error)
+      throw appError('email/send-failed', StatusCodes.INTERNAL_SERVER_ERROR)
+    }
 
     return { ...result, token }
   },
@@ -51,12 +67,31 @@ export const authService = {
     }
 
     const token = await generateToken({
-      id: dbResponse.id,
+      sub: dbResponse.id,
       email: dbResponse.email,
       role: dbResponse.role
     })
 
     return { ...dbResponse, token }
+  },
+  // TODO: zod for token & email?
+  async verifyEmail(email: string, token: string): Promise<void> {
+    const payload = await verifyToken(token)
+
+    if (!payload || payload.email !== email) {
+      throw appError('auth/invalid-token', StatusCodes.UNAUTHORIZED)
+    }
+    const user = await selectUserByEmail(email)
+
+    if (!user) {
+      throw appError('auth/user-not-found', StatusCodes.NOT_FOUND)
+    }
+
+    if (user.status === UserStatus.VERIFIED) {
+      throw appError('auth/email-already-verified', StatusCodes.BAD_REQUEST)
+    }
+
+    await updateUserStatusByEmail(email, UserStatus.VERIFIED)
   },
 
   async logout(): Promise<void> {
