@@ -30,8 +30,7 @@ const getVerificationUrlBase = () => {
     process.env.VERIFICATION_URL_BASE || 'http://localhost:5173/auth/action'
   )
 }
-
-export function getVerificationUrl(email: string, token: string) {
+export const getVerificationUrl = (email: string, token: string) => {
   const base = getVerificationUrlBase()
 
   return `${base}?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`

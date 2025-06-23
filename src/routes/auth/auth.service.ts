@@ -8,10 +8,9 @@ import {
 import { getVerificationUrl, sendVerificationEmail } from '@src/lib/email'
 import { appError } from '@src/lib/errors/app-error'
 import { encode } from '@src/lib/hash'
-import { generateToken } from '@src/lib/jwt'
+import { generateToken, verifyToken } from '@src/lib/jwt'
 import { logger } from '@src/lib/logger'
 import { UserStatus } from '@src/types/user-status'
-import { verify } from 'hono/jwt'
 import { StatusCodes } from 'http-status-codes'
 
 import type { LoginDTO, SignUpDTO, UserResponseDTO } from './auth.schema'
@@ -32,7 +31,7 @@ export const authService = {
     }
 
     const token = await generateToken({
-      id: result.id,
+      sub: result.id,
       email: result.email,
       role: result.role
     })
@@ -68,7 +67,7 @@ export const authService = {
     }
 
     const token = await generateToken({
-      id: dbResponse.id,
+      sub: dbResponse.id,
       email: dbResponse.email,
       role: dbResponse.role
     })
@@ -77,7 +76,7 @@ export const authService = {
   },
   // TODO: zod for token & email?
   async verifyEmail(email: string, token: string): Promise<void> {
-    const payload = await verify(token, process.env.JWT_SECRET!)
+    const payload = await verifyToken(token)
 
     if (!payload || payload.email !== email) {
       throw appError('auth/invalid-token', StatusCodes.UNAUTHORIZED)
